@@ -92,3 +92,21 @@ input:focus {
   outline: none;
   border-color: var(--color-primary);
 }
+
+/* ALERTS */
+.ui-alert {
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  font-size: var(--fs-small);
+  margin-bottom: var(--space-md);
+}
+
+.ui-alert--success {
+  background-color: var(--color-success-bg);
+  color: var(--color-success-text);
+}
+
+.ui-alert--error {
+  background-color: var(--color-error-bg);
+  color: var(--color-error-text);
+}
