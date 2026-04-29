@@ -1,3 +1,5 @@
+import { getToken } from "../utils/auth-storage";
+
 const API_BASE_URL = "https://v2.api.noroff.dev";
 
 /**
@@ -7,7 +9,7 @@ const API_BASE_URL = "https://v2.api.noroff.dev";
  * @returns {Promise<object|null>} Parsed API response
  */
 export async function request(endpoint, options = {}) {
-  const token = localStorage.getItem("token");
+  const token = getToken();
 
   const headers = new Headers(options.headers || {});
 
