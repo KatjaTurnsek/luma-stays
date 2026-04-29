@@ -110,3 +110,27 @@ input:focus {
   background-color: var(--color-error-bg);
   color: var(--color-error-text);
 }
+
+/* LOADER */
+.ui-loader {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--color-primary);
+  font-size: var(--fs-small);
+}
+
+.ui-loader__spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--color-bg-secondary);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: ui-spin 0.8s linear infinite;
+}
+
+@keyframes ui-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
