@@ -1,6 +1,11 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import VenueCard from "../components/VenueCard";
+import Loader from "../components/Loader";
+import UiAlert from "../components/UiAlert";
+
+import { getVenues } from "../api/venues-api";
 
 import heroDesktop from "../assets/images/hero-desktop.webp";
 import heroMobile from "../assets/images/hero-mobile.webp";
@@ -8,47 +13,75 @@ import locationIcon from "../assets/icons/location.svg";
 import calendarIcon from "../assets/icons/calendar.svg";
 import guestsIcon from "../assets/icons/users.svg";
 import chevronDownIcon from "../assets/icons/chevron-down.svg";
-
-import venue1 from "../assets/images/venue-01.webp";
-import venue2 from "../assets/images/venue-02.webp";
-import venue3 from "../assets/images/venue-03.webp";
+import placeholderImage from "../assets/images/venue-01.webp";
 
 import "../styles/home.css";
 
-const featuredVenues = [
-  {
-    id: "nordic-lake-cabin",
-    title: "Nordic Lake Cabin",
-    location: "Bled, Slovenia",
-    price: "149 EUR / night",
-    guests: "4 guests",
-    rating: "4,5",
-    image: venue1,
-    amenities: ["parking", "pets"],
-  },
-  {
-    id: "casa-luma-terrace",
-    title: "Casa Luma Terrace",
-    location: "Piran, Slovenia",
-    price: "200 EUR / night",
-    guests: "2 guests",
-    rating: "4,7",
-    image: venue2,
-    amenities: ["parking", "pets", "breakfast"],
-  },
-  {
-    id: "alpine-hideaway-loft",
-    title: "Alpine Hideaway Loft",
-    location: "Kranjska Gora, Slovenia",
-    price: "400 EUR / night",
-    guests: "6 guests",
-    rating: "4,9",
-    image: venue3,
-    amenities: ["parking", "breakfast"],
-  },
-];
+/**
+ * Converts API venue data into the format used by VenueCard.
+ * @param {object} venue - Venue from API
+ * @returns {object} Formatted venue card data
+ */
+function formatVenueCardData(venue) {
+  return {
+    id: venue.id,
+    title: venue.name,
+    location: venue.location?.city
+      ? `${venue.location.city}, ${venue.location.country}`
+      : "Location not added",
+    price: `${venue.price} EUR / night`,
+    guests: `${venue.maxGuests} guests`,
+    rating: venue.rating ? venue.rating.toString().replace(".", ",") : "0",
+    image: venue.media?.[0]?.url || placeholderImage,
+    amenities: getVenueAmenities(venue.meta),
+  };
+}
+
+/**
+ * Gets venue amenity names from API meta data.
+ * @param {object} meta - Venue meta data
+ * @returns {string[]} Amenity names
+ */
+function getVenueAmenities(meta) {
+  const amenities = [];
+
+  if (meta?.parking) {
+    amenities.push("parking");
+  }
+
+  if (meta?.pets) {
+    amenities.push("pets");
+  }
+
+  if (meta?.breakfast) {
+    amenities.push("breakfast");
+  }
+
+  return amenities;
+}
 
 export default function HomePage() {
+  const [venues, setVenues] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    async function loadVenues() {
+      try {
+        const response = await getVenues();
+        const formattedVenues = response.data.map(formatVenueCardData);
+
+        setVenues(formattedVenues.slice(0, 3));
+      } catch (error) {
+        setErrorMessage(error.message);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    loadVenues();
+  }, []);
+
   return (
     <>
       <section className="home-hero">
@@ -125,11 +158,21 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="home-venues__grid">
-            {featuredVenues.map((venue) => (
-              <VenueCard venue={venue} key={venue.id} />
-            ))}
-          </div>
+          {isLoading && <Loader text="Loading stays..." />}
+
+          {errorMessage && <UiAlert message={errorMessage} type="error" />}
+
+          {!isLoading && !errorMessage && venues.length === 0 && (
+            <UiAlert message="No stays found yet." type="error" />
+          )}
+
+          {!isLoading && !errorMessage && venues.length > 0 && (
+            <div className="home-venues__grid">
+              {venues.map((venue) => (
+                <VenueCard venue={venue} key={venue.id} />
+              ))}
+            </div>
+          )}
 
           <div className="home-venues__cta">
             <Link to="/venues" className="ui-btn-secondary">
