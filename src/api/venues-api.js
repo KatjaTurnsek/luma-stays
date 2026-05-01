@@ -7,3 +7,12 @@ import { request } from "./http-client";
 export function getVenues() {
   return request("/holidaze/venues?sort=created&sortOrder=desc&limit=12");
 }
+
+/**
+ * Gets one venue by ID from the Holidaze API.
+ * @param {string} id - Venue ID
+ * @returns {Promise<object>} Venue response
+ */
+export function getVenueById(id) {
+  return request(`/holidaze/venues/${id}?_owner=true&_bookings=true`);
+}
