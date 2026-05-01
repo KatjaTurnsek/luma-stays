@@ -7,7 +7,7 @@ export default function MainLayout() {
     <>
       <Header />
 
-      <main className="container py-4">
+      <main>
         <Outlet />
       </main>
 
