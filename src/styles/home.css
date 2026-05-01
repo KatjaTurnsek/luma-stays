@@ -48,6 +48,7 @@
   flex-direction: column;
   gap: var(--space-md);
   background-color: #fff;
+  border: 1px solid #2b2b2b;
   border-radius: var(--radius-md);
   padding: var(--space-lg);
   z-index: 2;
@@ -298,10 +299,18 @@
   margin-top: var(--space-xl);
 }
 
+@media (max-width: 1199px) {
+  .home-venues__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 767px) {
   .home-hero {
     height: 356px;
     border-bottom: 0;
+    overflow: visible;
+    margin-bottom: 330px;
   }
 
   .home-hero picture,
@@ -334,8 +343,13 @@
     position: static;
     width: 100%;
     transform: none;
+    display: flex;
+    flex-direction: column;
     border-radius: 0;
+    border-left: 0;
+    border-right: 0;
     padding: var(--space-lg) var(--space-md);
+    z-index: 1;
   }
 
   .home-search h2 {
