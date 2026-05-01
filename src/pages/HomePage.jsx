@@ -1,15 +1,13 @@
 import { Link } from "react-router-dom";
 
+import VenueCard from "../components/VenueCard";
+
 import heroDesktop from "../assets/images/hero-desktop.webp";
 import heroMobile from "../assets/images/hero-mobile.webp";
 import locationIcon from "../assets/icons/location.svg";
 import calendarIcon from "../assets/icons/calendar.svg";
 import guestsIcon from "../assets/icons/users.svg";
 import chevronDownIcon from "../assets/icons/chevron-down.svg";
-import starIcon from "../assets/icons/star.svg";
-import parkingIcon from "../assets/icons/parking.svg";
-import petsIcon from "../assets/icons/pets.svg";
-import breakfastIcon from "../assets/icons/breakfast.svg";
 
 import venue1 from "../assets/images/venue-01.webp";
 import venue2 from "../assets/images/venue-02.webp";
@@ -26,7 +24,7 @@ const featuredVenues = [
     guests: "4 guests",
     rating: "4,5",
     image: venue1,
-    amenities: [parkingIcon, petsIcon],
+    amenities: ["parking", "pets"],
   },
   {
     id: "casa-luma-terrace",
@@ -36,7 +34,7 @@ const featuredVenues = [
     guests: "2 guests",
     rating: "4,7",
     image: venue2,
-    amenities: [parkingIcon, petsIcon, breakfastIcon],
+    amenities: ["parking", "pets", "breakfast"],
   },
   {
     id: "alpine-hideaway-loft",
@@ -46,7 +44,7 @@ const featuredVenues = [
     guests: "6 guests",
     rating: "4,9",
     image: venue3,
-    amenities: [parkingIcon, breakfastIcon],
+    amenities: ["parking", "breakfast"],
   },
 ];
 
@@ -129,45 +127,7 @@ export default function HomePage() {
 
           <div className="home-venues__grid">
             {featuredVenues.map((venue) => (
-              <article className="home-card" key={venue.id}>
-                <div className="home-card__image-wrap">
-                  <img src={venue.image} alt={venue.title} />
-
-                  <div className="home-card__location">
-                    <img src={locationIcon} alt="" aria-hidden="true" />
-                    <span>{venue.location}</span>
-                  </div>
-                </div>
-
-                <div className="home-card__content">
-                  <div>
-                    <h3>{venue.title}</h3>
-                    <p>
-                      {venue.price} • {venue.guests}
-                    </p>
-                  </div>
-
-                  <div className="home-card__rating">
-                    <img src={starIcon} alt="" aria-hidden="true" />
-                    <span>{venue.rating}</span>
-                  </div>
-                </div>
-
-                <div className="home-card__footer">
-                  <div className="home-card__amenities">
-                    {venue.amenities.map((icon) => (
-                      <img src={icon} alt="" aria-hidden="true" key={icon} />
-                    ))}
-                  </div>
-
-                  <Link
-                    to={`/venues/${venue.id}`}
-                    className="ui-btn-primary home-card__button"
-                  >
-                    View details
-                  </Link>
-                </div>
-              </article>
+              <VenueCard venue={venue} key={venue.id} />
             ))}
           </div>
 
