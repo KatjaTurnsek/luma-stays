@@ -60,8 +60,29 @@ function getVenueAmenities(meta) {
   return amenities;
 }
 
+/**
+ * Checks if a venue matches the search text.
+ * @param {object} venue - Formatted venue card data
+ * @param {string} searchText - Search input value
+ * @returns {boolean} True if venue matches search
+ */
+function venueMatchesSearch(venue, searchText) {
+  const normalizedSearch = searchText.trim().toLowerCase();
+
+  if (!normalizedSearch) {
+    return true;
+  }
+
+  return (
+    venue.title.toLowerCase().includes(normalizedSearch) ||
+    venue.location.toLowerCase().includes(normalizedSearch)
+  );
+}
+
 export default function HomePage() {
   const [venues, setVenues] = useState([]);
+  const [visibleVenues, setVisibleVenues] = useState([]);
+  const [searchValue, setSearchValue] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -71,7 +92,8 @@ export default function HomePage() {
         const response = await getVenues();
         const formattedVenues = response.data.map(formatVenueCardData);
 
-        setVenues(formattedVenues.slice(0, 3));
+        setVenues(formattedVenues);
+        setVisibleVenues(formattedVenues.slice(0, 3));
       } catch (error) {
         setErrorMessage(error.message);
       } finally {
@@ -81,6 +103,16 @@ export default function HomePage() {
 
     loadVenues();
   }, []);
+
+  function handleSearchSubmit(event) {
+    event.preventDefault();
+
+    const matchingVenues = venues.filter((venue) =>
+      venueMatchesSearch(venue, searchValue)
+    );
+
+    setVisibleVenues(matchingVenues.slice(0, 3));
+  }
 
   return (
     <>
@@ -98,14 +130,23 @@ export default function HomePage() {
           </p>
         </div>
 
-        <form className="home-search" aria-label="Search stays">
+        <form
+          className="home-search"
+          aria-label="Search stays"
+          onSubmit={handleSearchSubmit}
+        >
           <h2>Find your next stay</h2>
 
           <div className="home-search__line"></div>
 
           <label className="home-search__field">
-            <span className="visually-hidden">Location</span>
-            <input type="text" placeholder="Location" />
+            <span className="visually-hidden">Location or stay name</span>
+            <input
+              type="search"
+              placeholder="Location"
+              value={searchValue}
+              onChange={(event) => setSearchValue(event.target.value)}
+            />
             <span>
               <img src={locationIcon} alt="" aria-hidden="true" />
             </span>
@@ -162,13 +203,16 @@ export default function HomePage() {
 
           {errorMessage && <UiAlert message={errorMessage} type="error" />}
 
-          {!isLoading && !errorMessage && venues.length === 0 && (
-            <UiAlert message="No stays found yet." type="error" />
+          {!isLoading && !errorMessage && visibleVenues.length === 0 && (
+            <UiAlert
+              message="No stays found. Try another search."
+              type="error"
+            />
           )}
 
-          {!isLoading && !errorMessage && venues.length > 0 && (
+          {!isLoading && !errorMessage && visibleVenues.length > 0 && (
             <div className="home-venues__grid">
-              {venues.map((venue) => (
+              {visibleVenues.map((venue) => (
                 <VenueCard venue={venue} key={venue.id} />
               ))}
             </div>
