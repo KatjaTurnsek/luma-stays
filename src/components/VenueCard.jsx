@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 
 import locationIcon from "../assets/icons/location.svg";
 import starIcon from "../assets/icons/star.svg";
+import wifiIcon from "../assets/icons/wifi.svg";
 import parkingIcon from "../assets/icons/parking.svg";
 import petsIcon from "../assets/icons/pets.svg";
 import breakfastIcon from "../assets/icons/breakfast.svg";
@@ -9,6 +10,7 @@ import breakfastIcon from "../assets/icons/breakfast.svg";
 import "../styles/venue-card.css";
 
 const amenityIcons = {
+  wifi: wifiIcon,
   parking: parkingIcon,
   pets: petsIcon,
   breakfast: breakfastIcon,
@@ -42,14 +44,15 @@ export default function VenueCard({ venue }) {
 
       <div className="venue-card__footer">
         <div className="venue-card__amenities">
-          {venue.amenities?.map((amenity) => (
-            <img
-              src={amenityIcons[amenity]}
-              alt=""
-              aria-hidden="true"
-              key={amenity}
-            />
-          ))}
+          {venue.amenities?.map((amenity) => {
+            const icon = amenityIcons[amenity];
+
+            if (!icon) {
+              return null;
+            }
+
+            return <img src={icon} alt="" aria-hidden="true" key={amenity} />;
+          })}
         </div>
 
         <Link

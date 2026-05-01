@@ -26,9 +26,7 @@ function formatVenueCardData(venue) {
   return {
     id: venue.id,
     title: venue.name,
-    location: venue.location?.city
-      ? `${venue.location.city}, ${venue.location.country}`
-      : "Location not added",
+    location: getLocationText(venue.location),
     price: `${venue.price} EUR / night`,
     guests: `${venue.maxGuests} guests`,
     rating: venue.rating ? venue.rating.toString().replace(".", ",") : "0",
@@ -38,12 +36,40 @@ function formatVenueCardData(venue) {
 }
 
 /**
+ * Gets readable location text from API location data.
+ * @param {object} location - Venue location data
+ * @returns {string} Location text
+ */
+function getLocationText(location) {
+  const city = location?.city;
+  const country = location?.country;
+
+  if (city && country) {
+    return `${city}, ${country}`;
+  }
+
+  if (city) {
+    return city;
+  }
+
+  if (country) {
+    return country;
+  }
+
+  return "Location not added";
+}
+
+/**
  * Gets venue amenity names from API meta data.
  * @param {object} meta - Venue meta data
  * @returns {string[]} Amenity names
  */
 function getVenueAmenities(meta) {
   const amenities = [];
+
+  if (meta?.wifi) {
+    amenities.push("wifi");
+  }
 
   if (meta?.parking) {
     amenities.push("parking");
