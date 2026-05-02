@@ -3,10 +3,10 @@ import { Link, useParams } from "react-router-dom";
 
 import Loader from "../components/Loader";
 import UiAlert from "../components/UiAlert";
+import VenueGallery from "../components/VenueGallery";
 
 import { getVenueById } from "../api/venues-api";
 
-import placeholderImage from "../assets/images/venue-01.webp";
 import locationIcon from "../assets/icons/location.svg";
 import usersIcon from "../assets/icons/users.svg";
 import starIcon from "../assets/icons/star.svg";
@@ -16,19 +16,8 @@ import breakfastIcon from "../assets/icons/breakfast.svg";
 import wifiIcon from "../assets/icons/wifi.svg";
 import userIcon from "../assets/icons/user.svg";
 import calendarIcon from "../assets/icons/calendar.svg";
-import chevronLeftIcon from "../assets/icons/chevron-left.svg";
-import chevronRightIcon from "../assets/icons/chevron-right.svg";
 
 import "../styles/venue-details.css";
-
-/**
- * Gets image URL from a venue media item.
- * @param {object} mediaItem - API media item
- * @returns {string} Image URL
- */
-function getMediaUrl(mediaItem) {
-  return mediaItem?.url || placeholderImage;
-}
 
 /**
  * Gets readable location text from venue data.
@@ -85,7 +74,6 @@ export default function VenueDetailsPage() {
   const { id } = useParams();
 
   const [venue, setVenue] = useState(null);
-  const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -136,72 +124,14 @@ export default function VenueDetailsPage() {
     );
   }
 
-  const images = venue.media?.length
-    ? venue.media
-    : [{ url: placeholderImage }];
-  const activeImage = images[activeImageIndex] || images[0];
   const locationText = getLocationText(venue.location);
   const features = getVenueFeatures(venue.meta);
   const owner = venue.owner;
 
-  function showPreviousImage() {
-    setActiveImageIndex((currentIndex) =>
-      currentIndex === 0 ? images.length - 1 : currentIndex - 1
-    );
-  }
-
-  function showNextImage() {
-    setActiveImageIndex((currentIndex) =>
-      currentIndex === images.length - 1 ? 0 : currentIndex + 1
-    );
-  }
-
   return (
     <div className="venue-details">
-      <section className="venue-details__gallery">
-        <button
-          type="button"
-          className="venue-details__gallery-button venue-details__gallery-button--left"
-          onClick={showPreviousImage}
-          aria-label="Show previous image"
-        >
-          <img src={chevronLeftIcon} alt="" aria-hidden="true" />
-        </button>
-
-        <img
-          src={getMediaUrl(activeImage)}
-          alt={activeImage?.alt || venue.name}
-          className="venue-details__main-image"
-        />
-
-        <button
-          type="button"
-          className="venue-details__gallery-button venue-details__gallery-button--right"
-          onClick={showNextImage}
-          aria-label="Show next image"
-        >
-          <img src={chevronRightIcon} alt="" aria-hidden="true" />
-        </button>
-      </section>
-
       <div className="container">
-        <div className="venue-details__thumbnails">
-          {images.slice(0, 4).map((image, index) => (
-            <button
-              type="button"
-              className={
-                index === activeImageIndex
-                  ? "venue-details__thumbnail venue-details__thumbnail--active"
-                  : "venue-details__thumbnail"
-              }
-              onClick={() => setActiveImageIndex(index)}
-              key={`${image.url}-${index}`}
-              aria-label={`Show image ${index + 1}`}
-            >
-              <img src={getMediaUrl(image)} alt="" aria-hidden="true" />
-            </button>
-          ))}
-        </div>
+        <VenueGallery images={venue.media} title={venue.name} />
 
         <div className="venue-details__layout">
           <main className="venue-details__content">
@@ -263,12 +193,6 @@ export default function VenueDetailsPage() {
               ) : (
                 <p>No facilities have been added yet.</p>
               )}
-            </section>
-
-            <section className="venue-details__section">
-              <p>
-                {venue.description || "No extra description has been added."}
-              </p>
             </section>
 
             <section className="venue-details__section venue-details__host-section">
