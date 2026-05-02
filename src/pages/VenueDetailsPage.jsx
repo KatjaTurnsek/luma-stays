@@ -4,6 +4,7 @@ import { Link, useParams } from "react-router-dom";
 import Loader from "../components/Loader";
 import UiAlert from "../components/UiAlert";
 import VenueGallery from "../components/VenueGallery";
+import VenueBookingCard from "../components/VenueBookingCard";
 
 import { getVenueById } from "../api/venues-api";
 
@@ -15,7 +16,6 @@ import petsIcon from "../assets/icons/pets.svg";
 import breakfastIcon from "../assets/icons/breakfast.svg";
 import wifiIcon from "../assets/icons/wifi.svg";
 import userIcon from "../assets/icons/user.svg";
-import calendarIcon from "../assets/icons/calendar.svg";
 
 import "../styles/venue-details.css";
 
@@ -201,7 +201,9 @@ export default function VenueDetailsPage() {
               <div className="venue-details__host">
                 <img
                   src={owner?.avatar?.url || userIcon}
-                  alt={owner?.name ? `${owner.name} avatar` : ""}
+                  alt={
+                    owner?.name ? `${owner.name} avatar` : "Default user avatar"
+                  }
                 />
 
                 <div>
@@ -212,39 +214,7 @@ export default function VenueDetailsPage() {
             </section>
           </main>
 
-          <aside className="venue-details__booking-card">
-            <p className="venue-details__price">{venue.price} EUR / night</p>
-            <p className="venue-details__booking-title">Check availability:</p>
-
-            <div className="venue-details__booking-divider"></div>
-
-            <label className="venue-details__booking-field">
-              <span className="visually-hidden">Select dates</span>
-              <input type="text" placeholder="Select dates" disabled />
-              <span>
-                <img src={calendarIcon} alt="" aria-hidden="true" />
-              </span>
-            </label>
-
-            <label className="venue-details__booking-field">
-              <span className="visually-hidden">Select guests</span>
-              <input
-                type="text"
-                placeholder={`Select guests, max ${venue.maxGuests}`}
-                disabled
-              />
-              <span>
-                <img src={usersIcon} alt="" aria-hidden="true" />
-              </span>
-            </label>
-
-            <button
-              type="button"
-              className="ui-btn-primary venue-details__book-button"
-            >
-              Book now
-            </button>
-          </aside>
+          <VenueBookingCard venue={venue} />
         </div>
       </div>
     </div>

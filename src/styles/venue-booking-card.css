@@ -1,0 +1,352 @@
+.venue-booking-card {
+  position: relative;
+  background: var(--color-warm-ivory, #f7f3ee);
+  border: 1px solid var(--color-charcoal, #2b2b2b);
+  border-radius: 10px;
+  color: var(--color-charcoal, #2b2b2b);
+  max-width: 660px;
+  overflow: visible;
+  z-index: 5;
+}
+
+.venue-booking-card__top {
+  padding: 2rem;
+  border-bottom: 1px solid var(--color-charcoal, #2b2b2b);
+}
+
+.venue-booking-card__top h2 {
+  margin: 0 0 1rem;
+  font-family: var(--font-body, "Manrope", sans-serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.venue-booking-card__top p {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.venue-booking-card__content {
+  position: relative;
+  padding: 2rem;
+  overflow: visible;
+}
+
+.venue-booking-card__dropdown {
+  position: relative;
+}
+
+.venue-booking-card__input {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 48px;
+  margin-bottom: 1rem;
+  border: 1px solid var(--color-charcoal, #2b2b2b);
+  border-radius: 10px;
+  overflow: hidden;
+  background: #ffffff;
+  color: var(--color-charcoal, #2b2b2b);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  padding: 0;
+}
+
+.venue-booking-card__input:hover {
+  border-color: var(--color-deep-olive, #556b5d);
+}
+
+.venue-booking-card__input > span:first-child {
+  display: flex;
+  align-items: center;
+  padding: 0 1.25rem;
+}
+
+.venue-booking-card__input-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  min-width: 48px;
+  align-self: stretch;
+  background: var(--color-charcoal, #2b2b2b);
+}
+
+.venue-booking-card__input-icon img {
+  width: 22px;
+  height: 22px;
+  filter: brightness(0) invert(1);
+}
+
+.venue-booking-card__dropdown-panel {
+  position: absolute;
+  left: 0;
+  top: calc(100% - 0.25rem);
+  z-index: 20;
+}
+
+.venue-booking-card__dropdown-panel--calendar {
+  width: min(560px, 90vw);
+}
+
+.venue-booking-card__dropdown-panel--guests {
+  width: min(360px, 90vw);
+}
+
+.venue-date-picker {
+  margin-bottom: 0;
+  border: 1px solid var(--color-charcoal, #2b2b2b);
+  border-radius: 10px;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0 12px 30px rgba(43, 43, 43, 0.12);
+}
+
+.venue-date-picker__months {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.venue-date-picker__month {
+  padding: 1.25rem 1rem;
+}
+
+.venue-date-picker__month + .venue-date-picker__month {
+  border-left: 1px solid var(--color-soft-sand, #eae1d6);
+}
+
+.venue-date-picker__month h3 {
+  margin: 0 0 1rem;
+  text-align: center;
+  font-family: var(--font-body, "Manrope", sans-serif);
+  font-size: 1rem;
+}
+
+.venue-date-picker__grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(24px, 1fr));
+  gap: 0.25rem;
+  text-align: center;
+}
+
+.venue-date-picker__weekday {
+  color: #8c8882;
+  font-size: 0.8rem;
+}
+
+.venue-date-picker__empty,
+.venue-date-picker__day {
+  min-height: 28px;
+}
+
+.venue-date-picker__day {
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--color-charcoal, #2b2b2b);
+  font: inherit;
+  cursor: pointer;
+}
+
+.venue-date-picker__day:hover {
+  border-color: var(--color-charcoal, #2b2b2b);
+}
+
+.venue-date-picker__day--booked {
+  color: #aaa39b;
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+
+.venue-date-picker__day--selected {
+  background: var(--color-deep-olive, #556b5d);
+  color: var(--color-warm-ivory, #f7f3ee);
+}
+
+.venue-date-picker__nav {
+  position: absolute;
+  top: 0.95rem;
+  z-index: 1;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--color-deep-olive, #556b5d);
+  border-radius: 8px;
+  background: var(--color-soft-sand, #eae1d6);
+  color: var(--color-charcoal, #2b2b2b);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.venue-date-picker__nav--previous {
+  left: 1rem;
+}
+
+.venue-date-picker__nav--next {
+  right: 1rem;
+}
+
+.venue-date-picker__summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-top: 1px solid var(--color-charcoal, #2b2b2b);
+}
+
+.venue-date-picker__summary p {
+  margin: 0;
+}
+
+.venue-date-picker__summary button:not(.venue-date-picker__apply-button),
+.venue-booking-card__small-button {
+  border: 1px solid var(--color-deep-olive, #556b5d);
+  border-radius: 10px;
+  background: var(--color-soft-sand, #eae1d6);
+  color: var(--color-charcoal, #2b2b2b);
+  padding: 0.6rem 1.1rem;
+  font: inherit;
+  cursor: pointer;
+}
+
+.venue-date-picker__actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.venue-date-picker__actions .venue-date-picker__apply-button {
+  border: 0;
+  border-radius: 10px;
+  background: var(--color-deep-olive, #556b5d);
+  color: var(--color-warm-ivory, #f7f3ee);
+  padding: 0.85rem 1.5rem;
+  font: inherit;
+  cursor: pointer;
+}
+
+.venue-date-picker__actions .venue-date-picker__apply-button:hover {
+  background: #3f5146;
+}
+
+.venue-date-picker__actions .venue-date-picker__apply-button:disabled {
+  background: #bfc8c2;
+  color: var(--color-warm-ivory, #f7f3ee);
+  cursor: not-allowed;
+}
+
+.venue-booking-card__guest-panel {
+  max-width: 360px;
+  margin-bottom: 0;
+  border: 1px solid var(--color-charcoal, #2b2b2b);
+  border-radius: 10px;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0 12px 30px rgba(43, 43, 43, 0.12);
+}
+
+.venue-booking-card__guest-row,
+.venue-booking-card__guest-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem;
+}
+
+.venue-booking-card__guest-row {
+  border-bottom: 1px solid var(--color-soft-sand, #eae1d6);
+}
+
+.venue-booking-card__guest-row p {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.venue-booking-card__guest-controls {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.venue-booking-card__guest-controls button {
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--color-deep-olive, #556b5d);
+  color: var(--color-warm-ivory, #f7f3ee);
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.venue-booking-card__apply-button {
+  border: 0;
+  border-radius: 10px;
+  background: var(--color-deep-olive, #556b5d);
+  color: var(--color-warm-ivory, #f7f3ee);
+  padding: 0.85rem 1.5rem;
+  font: inherit;
+  cursor: pointer;
+}
+
+.venue-booking-card__book-button {
+  width: 100%;
+  border: 0;
+  border-radius: 10px;
+  background: var(--color-deep-olive, #556b5d);
+  color: var(--color-warm-ivory, #f7f3ee);
+  padding: 1rem;
+  font: inherit;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.venue-booking-card__book-button:hover:not(:disabled) {
+  background: #3f5146;
+}
+
+.venue-booking-card__book-button:disabled {
+  background: #bfc8c2;
+  cursor: not-allowed;
+}
+
+@media (max-width: 760px) {
+  .venue-booking-card__top,
+  .venue-booking-card__content {
+    padding: 1.25rem;
+  }
+
+  .venue-booking-card__dropdown-panel--calendar,
+  .venue-booking-card__dropdown-panel--guests {
+    width: 100%;
+  }
+
+  .venue-date-picker__months {
+    grid-template-columns: 1fr;
+  }
+
+  .venue-date-picker__month + .venue-date-picker__month {
+    border-left: 0;
+    border-top: 1px solid var(--color-soft-sand, #eae1d6);
+  }
+
+  .venue-date-picker__summary {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .venue-date-picker__actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .venue-booking-card__guest-panel {
+    max-width: none;
+  }
+}

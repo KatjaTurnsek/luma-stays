@@ -2,6 +2,10 @@
   background-color: var(--color-bg-main);
 }
 
+.venue-details .container {
+  overflow: visible;
+}
+
 .venue-details__gallery {
   position: relative;
   width: 100vw;
@@ -84,8 +88,10 @@
 .venue-details__layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 520px;
+  align-items: start;
   gap: var(--space-xl);
   padding: var(--space-xl) 0;
+  overflow: visible;
 }
 
 .venue-details__content {
@@ -216,74 +222,11 @@
   font-size: var(--fs-small);
 }
 
-.venue-details__booking-card {
+.venue-details__layout > .venue-booking-card {
+  width: 100%;
   align-self: start;
   position: sticky;
   top: var(--space-lg);
-  padding: var(--space-lg);
-  background-color: var(--color-bg-main);
-  border: 1px solid #2b2b2b;
-  border-radius: var(--radius-md);
-}
-
-.venue-details__price,
-.venue-details__booking-title {
-  text-align: left;
-  font-weight: 600;
-}
-
-.venue-details__price {
-  margin-bottom: var(--space-md);
-  font-size: 18px;
-}
-
-.venue-details__booking-title {
-  margin-bottom: var(--space-lg);
-  font-size: var(--fs-body);
-}
-
-.venue-details__booking-divider {
-  width: calc(100% + (var(--space-lg) * 2));
-  height: 1px;
-  margin: 0 calc(var(--space-lg) * -1) var(--space-lg);
-  background-color: #2b2b2b;
-}
-
-.venue-details__booking-field {
-  display: flex;
-  width: 100%;
-  margin-bottom: var(--space-md);
-}
-
-.venue-details__booking-field input {
-  flex: 1;
-  min-height: 40px;
-  border: 1px solid #2b2b2b;
-  border-right: 0;
-  border-radius: 10px 0 0 10px;
-  background-color: #fff;
-  padding: 0 var(--space-md);
-  color: #2b2b2b;
-}
-
-.venue-details__booking-field span:last-child {
-  width: 40px;
-  display: grid;
-  place-items: center;
-  background-color: #2b2b2b;
-  border-radius: 0 10px 10px 0;
-}
-
-.venue-details__booking-field span:last-child img {
-  width: 24px;
-  height: 24px;
-  filter: brightness(0) saturate(100%) invert(96%) sepia(8%) saturate(329%)
-    hue-rotate(336deg) brightness(104%) contrast(94%);
-}
-
-.venue-details__book-button {
-  width: 100%;
-  margin-top: var(--space-lg);
 }
 
 @media (max-width: 1199px) {
@@ -297,8 +240,9 @@
     grid-template-columns: 1fr;
   }
 
-  .venue-details__booking-card {
+  .venue-details__layout > .venue-booking-card {
     position: static;
+    max-width: none;
   }
 }
 
@@ -355,7 +299,7 @@
     max-width: none;
   }
 
-  .venue-details__booking-card {
+  .venue-details__layout > .venue-booking-card {
     margin: 0;
     border-radius: var(--radius-md);
   }
