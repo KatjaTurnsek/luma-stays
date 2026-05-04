@@ -3,6 +3,17 @@ import { getToken } from "../utils/auth-storage";
 const API_BASE_URL = "https://v2.api.noroff.dev";
 
 /**
+ * Checks if a value is a plain object.
+ * @param {unknown} value - Value to check.
+ * @returns {boolean} True if value is a plain object.
+ */
+function isPlainObject(value) {
+  return (
+    value !== null && typeof value === "object" && !(value instanceof FormData)
+  );
+}
+
+/**
  * Reusable API request helper.
  * @param {string} endpoint - API endpoint starting with /
  * @param {object} options - Fetch options
@@ -10,10 +21,11 @@ const API_BASE_URL = "https://v2.api.noroff.dev";
  */
 export async function request(endpoint, options = {}) {
   const token = getToken();
-
   const headers = new Headers(options.headers || {});
+  const hasBody = Boolean(options.body);
+  const isJsonBody = isPlainObject(options.body);
 
-  if (!headers.has("Content-Type") && options.body) {
+  if (!headers.has("Content-Type") && isJsonBody) {
     headers.set("Content-Type", "application/json");
   }
 
@@ -24,6 +36,7 @@ export async function request(endpoint, options = {}) {
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     ...options,
     headers,
+    body: isJsonBody ? JSON.stringify(options.body) : options.body,
   });
 
   const contentType = response.headers.get("content-type");

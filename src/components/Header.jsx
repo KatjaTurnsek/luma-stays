@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { getAuth, clearAuth } from "../utils/auth-storage";
 
@@ -28,10 +28,25 @@ export default function Header() {
   const userName = auth?.name || "UserName";
   const avatarUrl = auth?.avatar?.url;
 
+  useEffect(() => {
+    setIsMenuOpen(false);
+    setIsProfileOpen(false);
+  }, [location.pathname]);
+
   function handleLogout() {
     clearAuth();
     setIsMenuOpen(false);
     setIsProfileOpen(false);
+  }
+
+  function toggleMenu() {
+    setIsMenuOpen((isOpen) => !isOpen);
+    setIsProfileOpen(false);
+  }
+
+  function toggleProfileMenu() {
+    setIsProfileOpen((isOpen) => !isOpen);
+    setIsMenuOpen(false);
   }
 
   return (
@@ -68,6 +83,7 @@ export default function Header() {
                 <Link to="/login" className="ui-btn-primary ui-header__button">
                   Login
                 </Link>
+
                 <Link
                   to="/register"
                   className="ui-btn-primary ui-header__button"
@@ -91,7 +107,7 @@ export default function Header() {
                 <button
                   type="button"
                   className="ui-header__profile-button"
-                  onClick={() => setIsProfileOpen(!isProfileOpen)}
+                  onClick={toggleProfileMenu}
                   aria-expanded={isProfileOpen}
                   aria-label="Open profile menu"
                 >
@@ -130,20 +146,18 @@ export default function Header() {
           </div>
         )}
 
-        {!isSimpleHeader && (
-          <button
-            type="button"
-            className="ui-header__menu-button"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-expanded={isMenuOpen}
-            aria-label="Open navigation menu"
-          >
-            <img src={menuIcon} alt="" aria-hidden="true" />
-          </button>
-        )}
+        <button
+          type="button"
+          className="ui-header__menu-button"
+          onClick={toggleMenu}
+          aria-expanded={isMenuOpen}
+          aria-label="Open navigation menu"
+        >
+          <img src={menuIcon} alt="" aria-hidden="true" />
+        </button>
       </div>
 
-      {isMenuOpen && !isSimpleHeader && (
+      {isMenuOpen && (
         <nav className="ui-header__mobile-menu" aria-label="Mobile navigation">
           {isLoggedIn && (
             <div className="ui-header__mobile-user">

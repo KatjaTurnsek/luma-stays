@@ -161,20 +161,127 @@ input:focus {
 
 /* ALERTS */
 .ui-alert {
-  padding: var(--space-md);
-  border-radius: var(--radius-md);
-  font-size: var(--fs-small);
-  margin-bottom: var(--space-md);
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 1000;
+  width: min(520px, calc(100vw - 3rem));
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  border: 1px solid currentColor;
+  border-radius: var(--radius-md, 10px);
+  overflow: hidden;
+  box-shadow: 0 12px 30px rgba(43, 43, 43, 0.12);
+}
+
+.ui-alert__content {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1rem 1.25rem;
+}
+
+.ui-alert__icon {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+.ui-alert__content h2 {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 30px;
+}
+
+.ui-alert__content p {
+  margin: 0.15rem 0 0;
+  font-size: var(--fs-small, 15px);
+  line-height: 22px;
+}
+
+.ui-alert__close {
+  width: 64px;
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-left: 1px solid currentColor;
+  background: transparent;
+  color: inherit;
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
 }
 
 .ui-alert--success {
-  background-color: var(--color-success-bg);
-  color: var(--color-success-text);
+  background-color: #eaf1ec;
+  color: #198754;
+}
+
+.ui-alert--success .ui-alert__icon {
+  filter: invert(35%) sepia(93%) saturate(455%) hue-rotate(95deg)
+    brightness(89%) contrast(88%);
 }
 
 .ui-alert--error {
-  background-color: var(--color-error-bg);
-  color: var(--color-error-text);
+  background-color: #f7ece9;
+  color: #a65d57;
+}
+
+.ui-alert--error .ui-alert__icon {
+  filter: invert(45%) sepia(18%) saturate(1042%) hue-rotate(318deg)
+    brightness(87%) contrast(87%);
+}
+
+.ui-alert--warning {
+  background-color: #f8f1e4;
+  color: #b88a3b;
+}
+
+.ui-alert--warning .ui-alert__icon {
+  filter: invert(56%) sepia(58%) saturate(504%) hue-rotate(2deg) brightness(91%)
+    contrast(85%);
+}
+
+.ui-alert--info {
+  background-color: #edf2f4;
+  color: #6e858f;
+}
+
+.ui-alert--info .ui-alert__icon {
+  filter: invert(53%) sepia(13%) saturate(638%) hue-rotate(153deg)
+    brightness(91%) contrast(85%);
+}
+
+@media (max-width: 767px) {
+  .ui-alert {
+    top: 1rem;
+    right: 1rem;
+    left: 1rem;
+    width: auto;
+  }
+
+  .ui-alert__content {
+    gap: 0.85rem;
+    padding: 0.85rem 1rem;
+  }
+
+  .ui-alert__icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .ui-alert__content h2 {
+    font-size: 20px;
+    line-height: 26px;
+  }
+
+  .ui-alert__close {
+    width: 48px;
+  }
 }
 
 /* LOADER */
