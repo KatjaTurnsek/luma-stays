@@ -15,3 +15,17 @@ export function registerUser(userData) {
     body: userData,
   });
 }
+
+/**
+ * Logs in a Holidaze user.
+ * @param {object} credentials - Login form data.
+ * @param {string} credentials.email - User email.
+ * @param {string} credentials.password - User password.
+ * @returns {Promise<object|null>} Login response with access token and profile data.
+ */
+export function loginUser(credentials) {
+  return request("/auth/login?_holidaze=true", {
+    method: "POST",
+    body: credentials,
+  });
+}
