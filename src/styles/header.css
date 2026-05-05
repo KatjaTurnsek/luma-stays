@@ -120,6 +120,8 @@
 .ui-header__status-dot img {
   width: 16px;
   height: 16px;
+  filter: brightness(0) saturate(100%) invert(96%) sepia(7%) saturate(338%)
+    hue-rotate(336deg) brightness(104%) contrast(94%);
 }
 
 .ui-header__profile-menu {
