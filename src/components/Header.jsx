@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, NavLink, useLocation } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { getAuth, clearAuth } from "../utils/auth-storage";
 
 import logoDark from "../assets/logos/logo-dark.svg";
@@ -15,28 +15,46 @@ import chevronDownIcon from "../assets/icons/chevron-down.svg";
 import "../styles/header.css";
 
 export default function Header() {
+  const [authData, setAuthData] = useState(getAuth());
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const location = useLocation();
 
-  const auth = getAuth();
-  const isLoggedIn = Boolean(auth?.accessToken);
-  const isVenueManager = Boolean(auth?.venueManager);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const isLoggedIn = Boolean(authData?.accessToken);
+  const isVenueManager = Boolean(authData?.venueManager);
   const isSimpleHeader =
     location.pathname === "/login" || location.pathname === "/register";
 
-  const userName = auth?.name || "UserName";
-  const avatarUrl = auth?.avatar?.url;
+  const userName = authData?.name || "UserName";
+  const avatarUrl = authData?.avatar?.url;
 
   useEffect(() => {
+    setAuthData(getAuth());
     setIsMenuOpen(false);
     setIsProfileOpen(false);
   }, [location.pathname]);
 
+  useEffect(() => {
+    function handleAuthChange() {
+      setAuthData(getAuth());
+    }
+
+    window.addEventListener("luma-auth-change", handleAuthChange);
+
+    return () => {
+      window.removeEventListener("luma-auth-change", handleAuthChange);
+    };
+  }, []);
+
   function handleLogout() {
     clearAuth();
+    setAuthData(null);
     setIsMenuOpen(false);
     setIsProfileOpen(false);
+    window.dispatchEvent(new Event("luma-auth-change"));
+    navigate("/");
   }
 
   function toggleMenu() {
