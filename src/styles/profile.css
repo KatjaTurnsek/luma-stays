@@ -121,6 +121,90 @@
   padding: 0 1.25rem;
 }
 
+.profile-page__avatar-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: var(--space-lg);
+}
+
+.profile-page__avatar-form label {
+  font-size: var(--fs-small);
+  font-weight: 600;
+}
+
+.profile-page__avatar-form input {
+  min-height: 48px;
+  width: 100%;
+  max-width: 420px;
+  border: 1px solid var(--color-charcoal, #2b2b2b);
+  border-radius: var(--radius-md, 10px);
+  background-color: #ffffff;
+  padding: 0 1rem;
+  color: var(--color-charcoal, #2b2b2b);
+  font: inherit;
+  -webkit-appearance: none;
+  appearance: none;
+  box-shadow: inset 0 0 0 1000px #ffffff;
+}
+
+.profile-page__avatar-form input:focus {
+  outline: 3px solid rgba(85, 107, 93, 0.25);
+  outline-offset: 2px;
+  background-color: #ffffff;
+  box-shadow: inset 0 0 0 1000px #ffffff;
+}
+
+.profile-page__avatar-form input::selection {
+  background-color: rgba(85, 107, 93, 0.25);
+  color: var(--color-charcoal, #2b2b2b);
+}
+
+.profile-page__avatar-form input:-webkit-autofill,
+.profile-page__avatar-form input:-webkit-autofill:hover,
+.profile-page__avatar-form input:-webkit-autofill:focus,
+.profile-page__avatar-form input:-webkit-autofill:active {
+  -webkit-text-fill-color: var(--color-charcoal, #2b2b2b);
+  box-shadow: inset 0 0 0 1000px #ffffff;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+.profile-page__avatar-form input[aria-invalid="true"] {
+  border-color: #a65d57;
+  background-color: #f7ece9;
+  color: #a65d57;
+  -webkit-text-fill-color: #a65d57;
+  box-shadow: inset 0 0 0 1000px #f7ece9;
+}
+
+.profile-page__avatar-form input[aria-invalid="true"]:focus {
+  background-color: #f7ece9;
+  box-shadow: inset 0 0 0 1000px #f7ece9;
+}
+
+.profile-page__avatar-help {
+  margin: 0;
+  color: #6f6a64;
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.profile-page__avatar-help--error {
+  color: #a65d57;
+}
+
+.profile-page__avatar-form .ui-btn-secondary {
+  width: fit-content;
+  min-height: 36px;
+  margin-top: 0.5rem;
+  padding: 0 1.25rem;
+}
+
+.profile-page__avatar-form .ui-btn-secondary:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
 .profile-page__role-section {
   min-height: 0;
 }
@@ -259,6 +343,13 @@
 
   .profile-page__summary-actions {
     margin-top: var(--space-md);
+  }
+
+  .profile-page__avatar-form input,
+  .profile-page__avatar-form .ui-btn-secondary {
+    width: 100%;
+    max-width: none;
+    justify-content: center;
   }
 
   .profile-page__role-section {

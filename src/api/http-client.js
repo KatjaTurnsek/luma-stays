@@ -1,6 +1,7 @@
 import { getToken } from "../utils/auth-storage";
 
 const API_BASE_URL = "https://v2.api.noroff.dev";
+const API_KEY = import.meta.env.VITE_NOROFF_API_KEY;
 
 /**
  * Checks if a value is a plain object.
@@ -16,13 +17,12 @@ function isPlainObject(value) {
 /**
  * Reusable API request helper.
  * @param {string} endpoint - API endpoint starting with /
- * @param {object} options - Fetch options
- * @returns {Promise<object|null>} Parsed API response
+ * @param {object} options - Fetch options.
+ * @returns {Promise<object|null>} Parsed API response.
  */
 export async function request(endpoint, options = {}) {
   const token = getToken();
   const headers = new Headers(options.headers || {});
-  const hasBody = Boolean(options.body);
   const isJsonBody = isPlainObject(options.body);
 
   if (!headers.has("Content-Type") && isJsonBody) {
@@ -31,6 +31,10 @@ export async function request(endpoint, options = {}) {
 
   if (token) {
     headers.set("Authorization", `Bearer ${token}`);
+  }
+
+  if (API_KEY) {
+    headers.set("X-Noroff-API-Key", API_KEY);
   }
 
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {

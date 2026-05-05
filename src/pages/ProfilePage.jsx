@@ -1,6 +1,10 @@
+import { useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 
-import { getAuth } from "../utils/auth-storage";
+import UiAlert from "../components/UiAlert";
+
+import { updateProfile } from "../api/profiles-api";
+import { getAuth, saveAuth } from "../utils/auth-storage";
 
 import userIcon from "../assets/icons/user.svg";
 
@@ -16,14 +20,103 @@ function getAvatarUrl(auth) {
 }
 
 /**
- * Displays the shared profile summary.
+ * Checks if a string is a valid URL.
+ * @param {string} value - URL value.
+ * @returns {boolean} True if valid URL.
+ */
+function isValidUrl(value) {
+  try {
+    const url = new URL(value);
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Displays the shared profile summary and avatar update form.
  * @param {object} props - Component props.
  * @param {object} props.auth - Saved auth data.
+ * @param {Function} props.onAuthUpdate - Updates auth state after profile change.
  * @returns {JSX.Element} Profile summary section.
  */
-function ProfileSummary({ auth }) {
+function ProfileSummary({ auth, onAuthUpdate }) {
   const avatarUrl = getAvatarUrl(auth);
   const accountType = auth?.venueManager ? "Venue manager" : "Customer";
+
+  const [avatarInput, setAvatarInput] = useState(avatarUrl || "");
+  const [avatarError, setAvatarError] = useState("");
+  const [apiError, setApiError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  /**
+   * Updates the avatar input value.
+   * @param {React.ChangeEvent<HTMLInputElement>} event - Input change event.
+   */
+  function handleAvatarChange(event) {
+    setAvatarInput(event.target.value);
+    setAvatarError("");
+    setApiError("");
+    setSuccessMessage("");
+  }
+
+  /**
+   * Clears feedback messages.
+   */
+  function clearMessages() {
+    setAvatarError("");
+    setApiError("");
+    setSuccessMessage("");
+  }
+
+  /**
+   * Submits avatar update.
+   * @param {React.FormEvent<HTMLFormElement>} event - Form submit event.
+   */
+  async function handleAvatarSubmit(event) {
+    event.preventDefault();
+    clearMessages();
+
+    const trimmedUrl = avatarInput.trim();
+
+    if (!trimmedUrl) {
+      setAvatarError("Avatar URL is required.");
+      return;
+    }
+
+    if (!isValidUrl(trimmedUrl)) {
+      setAvatarError("Please add a valid image URL.");
+      return;
+    }
+
+    try {
+      setIsUpdating(true);
+
+      const response = await updateProfile(auth.name, {
+        avatar: {
+          url: trimmedUrl,
+          alt: `${auth.name} avatar`,
+        },
+      });
+
+      const updatedAuth = {
+        ...auth,
+        ...response.data,
+        accessToken: auth.accessToken,
+      };
+
+      saveAuth(updatedAuth);
+      onAuthUpdate(updatedAuth);
+      window.dispatchEvent(new Event("luma-auth-change"));
+
+      setSuccessMessage("Avatar updated.");
+    } catch (error) {
+      setApiError(error.message);
+    } finally {
+      setIsUpdating(false);
+    }
+  }
 
   return (
     <section className="profile-page__section profile-page__summary-section">
@@ -53,11 +146,58 @@ function ProfileSummary({ auth }) {
         </div>
       </div>
 
-      <div className="profile-page__summary-actions">
-        <Link to="/profile/avatar" className="ui-btn-secondary">
-          Edit profile
-        </Link>
-      </div>
+      <form
+        className="profile-page__avatar-form"
+        onSubmit={handleAvatarSubmit}
+        noValidate
+      >
+        <label htmlFor="avatar-url">Avatar URL</label>
+
+        <input
+          id="avatar-url"
+          type="url"
+          value={avatarInput}
+          onChange={handleAvatarChange}
+          placeholder="https://example.com/avatar.jpg"
+          aria-invalid={Boolean(avatarError)}
+        />
+
+        <p
+          className={`profile-page__avatar-help ${
+            avatarError ? "profile-page__avatar-help--error" : ""
+          }`}
+        >
+          {avatarError || "Use a direct image URL for your profile avatar."}
+        </p>
+
+        <button
+          type="submit"
+          className="ui-btn-secondary"
+          disabled={isUpdating}
+        >
+          {isUpdating ? "Saving..." : "Update avatar"}
+        </button>
+      </form>
+
+      {(apiError || successMessage) && (
+        <>
+          {apiError && (
+            <UiAlert
+              message={apiError}
+              type="error"
+              onClose={() => setApiError("")}
+            />
+          )}
+
+          {successMessage && (
+            <UiAlert
+              message={successMessage}
+              type="success"
+              onClose={() => setSuccessMessage("")}
+            />
+          )}
+        </>
+      )}
     </section>
   );
 }
@@ -160,7 +300,7 @@ function VenueManagerProfileView() {
 }
 
 export default function ProfilePage() {
-  const auth = getAuth();
+  const [auth, setAuth] = useState(getAuth());
 
   if (!auth?.accessToken) {
     return <Navigate to="/login" replace />;
@@ -181,7 +321,7 @@ export default function ProfilePage() {
 
       <div className="container profile-page__container">
         <div className="profile-page__grid">
-          <ProfileSummary auth={auth} />
+          <ProfileSummary auth={auth} onAuthUpdate={setAuth} />
 
           {isVenueManager ? (
             <VenueManagerProfileView />
