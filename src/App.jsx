@@ -7,6 +7,7 @@ import VenueDetailsPage from "./pages/VenueDetailsPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import ProfilePage from "./pages/ProfilePage";
+import CreateVenuePage from "./pages/CreateVenuePage";
 import NotFoundPage from "./pages/NotFoundPage";
 
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -27,6 +28,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <ProfilePage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/venues/create"
+            element={
+              <ProtectedRoute requireVenueManager>
+                <CreateVenuePage />
               </ProtectedRoute>
             }
           />
