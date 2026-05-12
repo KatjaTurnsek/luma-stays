@@ -18,6 +18,19 @@ export function getVenueById(id) {
 }
 
 /**
+ * Gets venues owned by a profile.
+ * @param {string} profileName - Profile name.
+ * @returns {Promise<object|null>} Profile venues response.
+ */
+export function getProfileVenues(profileName) {
+  return request(
+    `/holidaze/profiles/${encodeURIComponent(
+      profileName
+    )}/venues?_bookings=true&sort=created&sortOrder=desc`
+  );
+}
+
+/**
  * Creates a new venue.
  * @param {object} venueData - Venue form data.
  * @returns {Promise<object|null>} Created venue response.
