@@ -67,7 +67,7 @@ export default function EditVenuePage() {
 
       setTimeout(() => {
         navigate(`/venues/${id}`);
-      }, 1000);
+      }, 1400);
     } catch (error) {
       setApiError(error.message || "Could not save changes.");
     } finally {

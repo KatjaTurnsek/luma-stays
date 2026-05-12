@@ -39,18 +39,18 @@ export default function UiAlert({ message, type = "error", onClose }) {
 
   return (
     <div className={`ui-alert ui-alert--${type}`} role="alert">
-      <div className="ui-alert__content">
+      <div className="ui-alert__icon-wrap">
         <img
           className="ui-alert__icon"
           src={alert.icon}
           alt=""
           aria-hidden="true"
         />
+      </div>
 
-        <div>
-          <h2>{alert.title}</h2>
-          <p>{message}</p>
-        </div>
+      <div className="ui-alert__text">
+        <p className="ui-alert__title">{alert.title}</p>
+        <p className="ui-alert__message">{message}</p>
       </div>
 
       {onClose && (
