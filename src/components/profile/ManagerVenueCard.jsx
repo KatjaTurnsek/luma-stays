@@ -54,7 +54,7 @@ export default function ManagerVenueCard({ venue }) {
           Delete
         </button>
 
-        <Link to={`/venues/${venue.id}/edit`} className="ui-btn-secondary">
+        <Link to={`/venues/${venue.id}/edit`} className="ui-btn-primary">
           Edit
         </Link>
       </div>

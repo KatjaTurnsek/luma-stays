@@ -41,3 +41,16 @@ export function createVenue(venueData) {
     body: venueData,
   });
 }
+
+/**
+ * Updates an existing venue.
+ * @param {string} id - Venue ID.
+ * @param {object} venueData - Updated venue form data.
+ * @returns {Promise<object|null>} Updated venue response.
+ */
+export function updateVenue(id, venueData) {
+  return request(`/holidaze/venues/${id}`, {
+    method: "PUT",
+    body: venueData,
+  });
+}
