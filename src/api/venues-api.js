@@ -54,3 +54,14 @@ export function updateVenue(id, venueData) {
     body: venueData,
   });
 }
+
+/**
+ * Deletes an existing venue.
+ * @param {string} id - Venue ID.
+ * @returns {Promise<object|null>} Deleted venue response.
+ */
+export function deleteVenue(id) {
+  return request(`/holidaze/venues/${id}`, {
+    method: "DELETE",
+  });
+}

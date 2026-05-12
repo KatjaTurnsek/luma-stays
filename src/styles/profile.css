@@ -385,6 +385,7 @@
   padding: 0 1rem 1rem;
 }
 
+.profile-page__manager-card-actions .ui-btn-primary,
 .profile-page__manager-card-actions .ui-btn-secondary,
 .profile-page__manager-card-actions .ui-btn-danger {
   min-height: 36px;
@@ -404,9 +405,45 @@
   color: var(--color-warm-ivory, #f7f3ee);
 }
 
+.ui-btn-danger:hover:not(:disabled) {
+  background-color: #8f4f4a;
+}
+
 .ui-btn-danger:disabled {
   opacity: 0.65;
   cursor: not-allowed;
+}
+
+.profile-page__delete-confirm {
+  display: grid;
+  gap: 0.85rem;
+  padding: 1rem;
+  border-top: 1px solid var(--color-soft-sand, #eae1d6);
+}
+
+.profile-page__delete-confirm p {
+  margin: 0;
+  font-weight: 600;
+}
+
+.profile-page__delete-confirm-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.profile-page__delete-confirm-actions .ui-btn-primary,
+.profile-page__delete-confirm-actions .ui-btn-secondary,
+.profile-page__delete-confirm-actions .ui-btn-danger {
+  min-height: 36px;
+  display: inline-flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md, 10px);
+  padding: 0 1rem;
+  font: inherit;
+  text-decoration: none;
 }
 
 @media (max-width: 1199px) {
@@ -567,6 +604,7 @@
     gap: var(--space-sm);
   }
 
+  .profile-page__manager-card-actions .ui-btn-primary,
   .profile-page__manager-card-actions .ui-btn-secondary,
   .profile-page__manager-card-actions .ui-btn-danger {
     flex: 1;

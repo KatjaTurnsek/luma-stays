@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 
 import {
@@ -12,11 +13,36 @@ import locationIcon from "../../assets/icons/location.svg";
  * Displays one managed venue card.
  * @param {object} props - Component props.
  * @param {object} props.venue - Venue data.
+ * @param {boolean} props.isDeleting - Delete loading state.
+ * @param {Function} props.onDeleteVenue - Delete handler.
  * @returns {JSX.Element} Manager venue card.
  */
-export default function ManagerVenueCard({ venue }) {
+export default function ManagerVenueCard({ venue, isDeleting, onDeleteVenue }) {
+  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
+
   const upcomingBookings = getUpcomingBookings([venue]);
   const bookingCount = upcomingBookings.length;
+
+  /**
+   * Opens delete confirmation.
+   */
+  function handleOpenDeleteConfirm() {
+    setIsConfirmingDelete(true);
+  }
+
+  /**
+   * Closes delete confirmation.
+   */
+  function handleCancelDelete() {
+    setIsConfirmingDelete(false);
+  }
+
+  /**
+   * Confirms venue deletion.
+   */
+  function handleConfirmDelete() {
+    onDeleteVenue(venue.id);
+  }
 
   return (
     <article className="profile-page__manager-card">
@@ -49,15 +75,45 @@ export default function ManagerVenueCard({ venue }) {
         <p>{venue.maxGuests} guests</p>
       </div>
 
-      <div className="profile-page__manager-card-actions">
-        <button type="button" className="ui-btn-danger" disabled>
-          Delete
-        </button>
+      {isConfirmingDelete ? (
+        <div className="profile-page__delete-confirm">
+          <p>Delete this venue?</p>
 
-        <Link to={`/venues/${venue.id}/edit`} className="ui-btn-primary">
-          Edit
-        </Link>
-      </div>
+          <div className="profile-page__delete-confirm-actions">
+            <button
+              type="button"
+              className="ui-btn-secondary"
+              onClick={handleCancelDelete}
+              disabled={isDeleting}
+            >
+              Cancel
+            </button>
+
+            <button
+              type="button"
+              className="ui-btn-danger"
+              onClick={handleConfirmDelete}
+              disabled={isDeleting}
+            >
+              {isDeleting ? "Deleting..." : "Yes, delete"}
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="profile-page__manager-card-actions">
+          <button
+            type="button"
+            className="ui-btn-danger"
+            onClick={handleOpenDeleteConfirm}
+          >
+            Delete
+          </button>
+
+          <Link to={`/venues/${venue.id}/edit`} className="ui-btn-primary">
+            Edit
+          </Link>
+        </div>
+      )}
     </article>
   );
 }
