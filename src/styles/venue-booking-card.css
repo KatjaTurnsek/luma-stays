@@ -188,6 +188,11 @@
   color: var(--color-warm-ivory, #f7f3ee);
 }
 
+.venue-date-picker__day--past {
+  color: #c7c0b8;
+  cursor: not-allowed;
+}
+
 .venue-date-picker__nav {
   position: absolute;
   top: 0.85rem;
@@ -342,6 +347,86 @@
   cursor: not-allowed;
 }
 
+.booking-confirmation {
+  background: #eaf1ec;
+  border: 1px solid #198754;
+  border-radius: 10px;
+  color: #198754;
+  overflow: hidden;
+}
+
+.booking-confirmation__top {
+  min-height: 56px;
+  display: flex;
+  justify-content: flex-end;
+  border-bottom: 1px solid #198754;
+}
+
+.booking-confirmation__close {
+  width: 64px;
+  border: 0;
+  background: transparent;
+  color: #198754;
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.booking-confirmation__content {
+  padding: 3rem 4rem 4rem;
+}
+
+.booking-confirmation__title-row {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.booking-confirmation__title-row img {
+  width: 48px;
+  height: 48px;
+  filter: invert(35%) sepia(93%) saturate(455%) hue-rotate(95deg)
+    brightness(89%) contrast(88%);
+}
+
+.booking-confirmation__title-row h2 {
+  margin: 0;
+  color: #198754;
+  font-family: var(--font-body, "Manrope", sans-serif);
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.booking-confirmation__details {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0 0 2rem;
+  color: var(--color-charcoal, #2b2b2b);
+}
+
+.booking-confirmation__details div {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.booking-confirmation__details dt,
+.booking-confirmation__details dd {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.booking-confirmation__details dd {
+  font-weight: 700;
+}
+
+.booking-confirmation__link {
+  min-height: 40px;
+  padding: 0 1.75rem;
+}
+
 @media (max-width: 760px) {
   .venue-booking-card__top,
   .venue-booking-card__content {
@@ -409,5 +494,30 @@
 
   .venue-booking-card__guest-panel {
     max-width: none;
+  }
+
+  .booking-confirmation__content {
+    padding: 2rem 1.5rem 2.5rem;
+  }
+
+  .booking-confirmation__title-row {
+    gap: 1rem;
+  }
+
+  .booking-confirmation__title-row h2 {
+    font-size: 1.5rem;
+  }
+
+  .booking-confirmation__title-row img {
+    width: 40px;
+    height: 40px;
+  }
+
+  .booking-confirmation__details div {
+    flex-wrap: wrap;
+  }
+
+  .booking-confirmation__link {
+    width: 100%;
   }
 }

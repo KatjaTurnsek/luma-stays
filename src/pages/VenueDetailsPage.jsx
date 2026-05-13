@@ -214,7 +214,15 @@ export default function VenueDetailsPage() {
             </section>
           </main>
 
-          <VenueBookingCard venue={venue} />
+          <VenueBookingCard
+            venue={venue}
+            onBookingCreated={(booking) =>
+              setVenue((currentVenue) => ({
+                ...currentVenue,
+                bookings: [...(currentVenue.bookings || []), booking],
+              }))
+            }
+          />
         </div>
       </div>
     </div>

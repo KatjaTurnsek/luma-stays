@@ -9,6 +9,21 @@ import {
 const WEEK_DAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 
 /**
+ * Checks if a date is before today.
+ * @param {Date} date - Date to check.
+ * @returns {boolean} True if the date is in the past.
+ */
+function isPastDate(date) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const compareDate = new Date(date);
+  compareDate.setHours(0, 0, 0, 0);
+
+  return compareDate < today;
+}
+
+/**
  * Displays one calendar month.
  * @param {object} props - Component props.
  * @returns {JSX.Element} Calendar month.
@@ -50,6 +65,8 @@ function CalendarMonth({
 
           const dateKey = getDateKey(day);
           const isBooked = bookedDateKeys.has(dateKey);
+          const isPast = isPastDate(day);
+          const isDisabled = isBooked || isPast;
           const isStart =
             selectedStartDate && getDateKey(selectedStartDate) === dateKey;
           const isEnd =
@@ -62,11 +79,13 @@ function CalendarMonth({
               type="button"
               className={`venue-date-picker__day ${
                 isBooked ? "venue-date-picker__day--booked" : ""
-              } ${isSelected ? "venue-date-picker__day--selected" : ""}`}
-              disabled={isBooked}
+              } ${isPast ? "venue-date-picker__day--past" : ""} ${
+                isSelected ? "venue-date-picker__day--selected" : ""
+              }`}
+              disabled={isDisabled}
               onClick={() => onDateClick(day)}
               aria-label={`${day.toLocaleDateString("en-GB")} ${
-                isBooked ? "booked" : "available"
+                isDisabled ? "unavailable" : "available"
               }`}
             >
               {day.getDate()}
@@ -92,6 +111,7 @@ export default function VenueDatePicker({
   setEndDate,
   nights,
   onApply,
+  onInvalidDateSelection,
 }) {
   const [visibleMonth, setVisibleMonth] = useState(new Date());
 
@@ -116,6 +136,8 @@ export default function VenueDatePicker({
   }
 
   function handleDateClick(date) {
+    onInvalidDateSelection("");
+
     if (!startDate || endDate || date < startDate) {
       setStartDate(date);
       setEndDate(null);
@@ -125,6 +147,9 @@ export default function VenueDatePicker({
     if (rangeHasBookedDate(startDate, date, bookedDateKeys)) {
       setStartDate(date);
       setEndDate(null);
+      onInvalidDateSelection(
+        "Those dates include an already booked date. Choose a new date range."
+      );
       return;
     }
 
@@ -134,6 +159,7 @@ export default function VenueDatePicker({
   function clearDates() {
     setStartDate(null);
     setEndDate(null);
+    onInvalidDateSelection("");
   }
 
   const canApply = startDate && endDate && nights > 0;

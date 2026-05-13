@@ -1,37 +1,80 @@
 import { useState } from "react";
-import VenueDatePicker from "./VenueDatePicker";
+
+import BookingConfirmation from "./BookingConfirmation";
 import GuestPicker from "./GuestPicker";
-import { getNightCount } from "../utils/date-utils";
+import UiAlert from "./UiAlert";
+import VenueDatePicker from "./VenueDatePicker";
+
+import { createBooking } from "../api/bookings-api";
+import { getAuth } from "../utils/auth-storage";
+import {
+  getBookedDateKeys,
+  getNightCount,
+  rangeHasBookedDate,
+} from "../utils/date-utils";
+
 import calendarIcon from "../assets/icons/calendar.svg";
 import usersIcon from "../assets/icons/users.svg";
+
 import "../styles/venue-booking-card.css";
 
 /**
  * Displays booking card on the venue details page.
  * @param {object} props - Component props.
  * @param {object} props.venue - Venue data.
+ * @param {Function} props.onBookingCreated - Updates venue bookings after success.
  * @returns {JSX.Element} Venue booking card.
  */
-export default function VenueBookingCard({ venue }) {
+export default function VenueBookingCard({ venue, onBookingCreated }) {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [guests, setGuests] = useState(1);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [isGuestPickerOpen, setIsGuestPickerOpen] = useState(false);
+  const [bookingMessage, setBookingMessage] = useState({
+    text: "",
+    type: "error",
+  });
+  const [confirmedBooking, setConfirmedBooking] = useState(null);
+  const [confirmedTotalPrice, setConfirmedTotalPrice] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const auth = getAuth();
   const price = venue?.price || 0;
   const maxGuests = venue?.maxGuests || 1;
   const bookings = venue?.bookings || [];
   const nights = getNightCount(startDate, endDate);
+  const totalPrice = nights * price;
+
+  /**
+   * Shows booking feedback with the correct UI message type.
+   * @param {string} text - Message text.
+   * @param {"success" | "error" | "warning" | "info"} type - Message type.
+   */
+  function showBookingMessage(text, type = "error") {
+    setBookingMessage({ text, type });
+  }
+
+  /**
+   * Clears booking feedback.
+   */
+  function clearBookingMessage() {
+    setBookingMessage({
+      text: "",
+      type: "error",
+    });
+  }
 
   function toggleDatePicker() {
     setIsDatePickerOpen((isOpen) => !isOpen);
     setIsGuestPickerOpen(false);
+    clearBookingMessage();
   }
 
   function toggleGuestPicker() {
     setIsGuestPickerOpen((isOpen) => !isOpen);
     setIsDatePickerOpen(false);
+    clearBookingMessage();
   }
 
   function closeDatePicker() {
@@ -42,8 +85,125 @@ export default function VenueBookingCard({ venue }) {
     setIsGuestPickerOpen(false);
   }
 
-  function handleBookNow() {
-    // Connect to create booking API in the later booking task.
+  function handleInvalidDateSelection(message) {
+    if (!message) {
+      clearBookingMessage();
+      return;
+    }
+
+    showBookingMessage(message, "warning");
+  }
+
+  function closeConfirmation() {
+    setConfirmedBooking(null);
+    setConfirmedTotalPrice(0);
+  }
+
+  /**
+   * Validates booking state before API submit.
+   * @returns {object} Message text and type.
+   */
+  function getBookingValidationMessage() {
+    const bookedDateKeys = getBookedDateKeys(bookings);
+
+    if (!auth?.accessToken) {
+      return {
+        text: "Log in as a customer to book this venue.",
+        type: "info",
+      };
+    }
+
+    if (auth?.venueManager) {
+      return {
+        text: "Venue managers cannot book from a manager account.",
+        type: "info",
+      };
+    }
+
+    if (!startDate || !endDate || nights <= 0) {
+      return {
+        text: "Choose valid check-in and check-out dates before booking.",
+        type: "warning",
+      };
+    }
+
+    if (rangeHasBookedDate(startDate, endDate, bookedDateKeys)) {
+      return {
+        text: "These dates include already booked dates. Choose another range.",
+        type: "warning",
+      };
+    }
+
+    if (guests < 1 || guests > maxGuests) {
+      return {
+        text: `Choose between 1 and ${maxGuests} guests.`,
+        type: "warning",
+      };
+    }
+
+    return {
+      text: "",
+      type: "error",
+    };
+  }
+
+  /**
+   * Creates a booking through the API.
+   */
+  async function handleBookNow() {
+    const validationMessage = getBookingValidationMessage();
+
+    if (validationMessage.text) {
+      showBookingMessage(validationMessage.text, validationMessage.type);
+      return;
+    }
+
+    clearBookingMessage();
+    setIsSubmitting(true);
+
+    try {
+      const response = await createBooking({
+        dateFrom: startDate.toISOString(),
+        dateTo: endDate.toISOString(),
+        guests,
+        venueId: venue.id,
+      });
+
+      const booking = response?.data;
+
+      if (!booking) {
+        showBookingMessage(
+          "Booking was created, but the response was missing.",
+          "warning"
+        );
+        return;
+      }
+
+      setConfirmedBooking(booking);
+      setConfirmedTotalPrice(totalPrice);
+      onBookingCreated?.(booking);
+
+      setStartDate(null);
+      setEndDate(null);
+      setGuests(1);
+      setIsDatePickerOpen(false);
+      setIsGuestPickerOpen(false);
+    } catch (error) {
+      showBookingMessage(error.message || "Could not create booking.", "error");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  if (confirmedBooking) {
+    return (
+      <BookingConfirmation
+        booking={confirmedBooking}
+        venue={venue}
+        totalPrice={confirmedTotalPrice}
+        onClose={closeConfirmation}
+      />
+    );
   }
 
   return (
@@ -57,6 +217,14 @@ export default function VenueBookingCard({ venue }) {
       </div>
 
       <div className="venue-booking-card__content">
+        {bookingMessage.text && (
+          <UiAlert
+            message={bookingMessage.text}
+            type={bookingMessage.type}
+            onClose={clearBookingMessage}
+          />
+        )}
+
         <div className="venue-booking-card__dropdown">
           <button
             type="button"
@@ -92,6 +260,7 @@ export default function VenueBookingCard({ venue }) {
                 setEndDate={setEndDate}
                 nights={nights}
                 onApply={closeDatePicker}
+                onInvalidDateSelection={handleInvalidDateSelection}
               />
             </div>
           )}
@@ -130,10 +299,10 @@ export default function VenueBookingCard({ venue }) {
         <button
           type="button"
           className="venue-booking-card__book-button"
-          disabled={!startDate || !endDate || nights <= 0}
+          disabled={!startDate || !endDate || nights <= 0 || isSubmitting}
           onClick={handleBookNow}
         >
-          Book now
+          {isSubmitting ? "Booking..." : "Book now"}
         </button>
       </div>
     </aside>
