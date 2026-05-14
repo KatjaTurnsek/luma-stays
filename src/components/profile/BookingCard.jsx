@@ -1,0 +1,82 @@
+import { Link } from "react-router-dom";
+
+import {
+  formatBookingDateRange,
+  getLocationText,
+  getVenueImage,
+} from "../../utils/profile-utils";
+
+/**
+ * Displays one booking card.
+ * @param {object} props - Component props.
+ * @param {object} props.booking - Booking data.
+ * @param {"customer" | "manager"} props.variant - Card context.
+ * @returns {JSX.Element} Booking card.
+ */
+export default function BookingCard({ booking, variant = "customer" }) {
+  const venue = booking.venue || {};
+  const venueName = venue.name || booking.venueName || "Venue not added";
+  const venueId = venue.id || booking.venueId;
+  const imageAlt = venue.media?.[0]?.alt || venueName;
+  const locationText = getLocationText(venue.location);
+  const dateRange = formatBookingDateRange(booking);
+  const guests = booking.guests || 1;
+  const customerName = booking.customer?.name || booking.customerName;
+
+  return (
+    <article className="profile-page__booking-card">
+      {venueId ? (
+        <Link
+          to={`/venues/${venueId}`}
+          className="profile-page__booking-card-image"
+        >
+          <img src={getVenueImage(venue)} alt={imageAlt} />
+        </Link>
+      ) : (
+        <div className="profile-page__booking-card-image">
+          <img src={getVenueImage(venue)} alt={imageAlt} />
+        </div>
+      )}
+
+      <div className="profile-page__booking-card-content">
+        <p className="profile-page__booking-card-label">
+          {variant === "manager" ? "Customer booking" : "Upcoming stay"}
+        </p>
+
+        <h4>
+          {venueId ? (
+            <Link to={`/venues/${venueId}`}>{venueName}</Link>
+          ) : (
+            venueName
+          )}
+        </h4>
+
+        <dl className="profile-page__booking-card-details">
+          <div>
+            <dt>Dates:</dt>
+            <dd>{dateRange}</dd>
+          </div>
+
+          <div>
+            <dt>Guests:</dt>
+            <dd>{guests}</dd>
+          </div>
+
+          {locationText !== "Location not added" && (
+            <div>
+              <dt>Location:</dt>
+              <dd>{locationText}</dd>
+            </div>
+          )}
+
+          {variant === "manager" && customerName && (
+            <div>
+              <dt>Customer:</dt>
+              <dd>{customerName}</dd>
+            </div>
+          )}
+        </dl>
+      </div>
+    </article>
+  );
+}

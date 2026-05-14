@@ -1,7 +1,6 @@
-import {
-  formatBookingDateRange,
-  getUpcomingBookings,
-} from "../../utils/profile-utils";
+import { getUpcomingBookings } from "../../utils/profile-utils";
+
+import BookingCard from "./BookingCard";
 
 /**
  * Displays booking overview for manager-owned venues.
@@ -21,17 +20,11 @@ export default function BookingOverview({ venues }) {
       <h3 className="profile-page__subheading">Upcoming bookings</h3>
 
       {upcomingBookings.length > 0 ? (
-        <ul className="profile-page__booking-list">
+        <div className="profile-page__booking-card-list">
           {upcomingBookings.map((booking) => (
-            <li key={booking.id}>
-              <span aria-hidden="true">✓</span>
-              <p>
-                {booking.venueName} -{" "}
-                <strong>{formatBookingDateRange(booking)}</strong>
-              </p>
-            </li>
+            <BookingCard booking={booking} variant="manager" key={booking.id} />
           ))}
-        </ul>
+        </div>
       ) : (
         <div className="profile-page__empty-state profile-page__empty-state--simple">
           <h3>No upcoming bookings yet</h3>

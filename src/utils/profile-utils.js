@@ -100,7 +100,15 @@ export function getUpcomingBookings(venues) {
     .flatMap((venue) =>
       (venue.bookings || []).map((booking) => ({
         ...booking,
+        venueId: venue.id,
         venueName: venue.name,
+        venue: {
+          id: venue.id,
+          name: venue.name,
+          media: venue.media,
+          location: venue.location,
+          price: venue.price,
+        },
       }))
     )
     .filter((booking) => new Date(booking.dateTo) >= today)
