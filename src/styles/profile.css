@@ -484,21 +484,6 @@
   text-decoration: none;
 }
 
-.ui-btn-danger {
-  border: 0;
-  background-color: #a65d57;
-  color: var(--color-warm-ivory, #f7f3ee);
-}
-
-.ui-btn-danger:hover:not(:disabled) {
-  background-color: #8f4f4a;
-}
-
-.ui-btn-danger:disabled {
-  opacity: 0.65;
-  cursor: not-allowed;
-}
-
 .profile-page__delete-confirm {
   display: grid;
   gap: 0.85rem;

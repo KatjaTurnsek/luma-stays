@@ -9,11 +9,11 @@ import BookingCard from "./BookingCard";
  * @returns {JSX.Element} Booking overview.
  */
 export default function BookingOverview({ venues }) {
-  const upcomingBookings = getUpcomingBookings(venues).slice(0, 4);
+  const upcomingBookings = getUpcomingBookings(venues);
 
   return (
     <section className="profile-page__section profile-page__role-section">
-      <h2>Booking overview</h2>
+      <h2>Bookings for managed venues</h2>
 
       <div className="profile-page__section-line"></div>
 
