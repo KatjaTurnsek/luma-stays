@@ -31,6 +31,7 @@ export default function VenueBookingCard({ venue, onBookingCreated }) {
   const [guests, setGuests] = useState(1);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [isGuestPickerOpen, setIsGuestPickerOpen] = useState(false);
+  const [isRoleNoticeVisible, setIsRoleNoticeVisible] = useState(true);
   const [bookingMessage, setBookingMessage] = useState({
     text: "",
     type: "error",
@@ -40,6 +41,10 @@ export default function VenueBookingCard({ venue, onBookingCreated }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const auth = getAuth();
+  const isLoggedIn = Boolean(auth?.accessToken);
+  const isVenueManager = Boolean(auth?.venueManager);
+  const isCustomer = isLoggedIn && !isVenueManager;
+
   const price = venue?.price || 0;
   const maxGuests = venue?.maxGuests || 1;
   const bookings = venue?.bookings || [];
@@ -106,14 +111,14 @@ export default function VenueBookingCard({ venue, onBookingCreated }) {
   function getBookingValidationMessage() {
     const bookedDateKeys = getBookedDateKeys(bookings);
 
-    if (!auth?.accessToken) {
+    if (!isLoggedIn) {
       return {
         text: "Log in as a customer to book this venue.",
         type: "info",
       };
     }
 
-    if (auth?.venueManager) {
+    if (isVenueManager) {
       return {
         text: "Venue managers cannot book from a manager account.",
         type: "info",
@@ -217,6 +222,22 @@ export default function VenueBookingCard({ venue, onBookingCreated }) {
       </div>
 
       <div className="venue-booking-card__content">
+        {isRoleNoticeVisible && isVenueManager && (
+          <UiAlert
+            message="Venue managers can view customer bookings from the profile page."
+            type="info"
+            onClose={() => setIsRoleNoticeVisible(false)}
+          />
+        )}
+
+        {isRoleNoticeVisible && !isLoggedIn && (
+          <UiAlert
+            message="Log in as a customer to book this venue."
+            type="info"
+            onClose={() => setIsRoleNoticeVisible(false)}
+          />
+        )}
+
         {bookingMessage.text && (
           <UiAlert
             message={bookingMessage.text}
@@ -225,85 +246,89 @@ export default function VenueBookingCard({ venue, onBookingCreated }) {
           />
         )}
 
-        <div className="venue-booking-card__dropdown">
-          <button
-            type="button"
-            className="venue-booking-card__input"
-            onClick={toggleDatePicker}
-            aria-expanded={isDatePickerOpen}
-            aria-controls="venue-date-picker"
-          >
-            <span>
-              {startDate && endDate
-                ? `${startDate.toLocaleDateString(
-                    "en-GB"
-                  )} - ${endDate.toLocaleDateString("en-GB")}`
-                : "Select dates"}
-            </span>
+        {isCustomer && (
+          <>
+            <div className="venue-booking-card__dropdown">
+              <button
+                type="button"
+                className="venue-booking-card__input"
+                onClick={toggleDatePicker}
+                aria-expanded={isDatePickerOpen}
+                aria-controls="venue-date-picker"
+              >
+                <span>
+                  {startDate && endDate
+                    ? `${startDate.toLocaleDateString(
+                        "en-GB"
+                      )} - ${endDate.toLocaleDateString("en-GB")}`
+                    : "Select dates"}
+                </span>
 
-            <span className="venue-booking-card__input-icon">
-              <img src={calendarIcon} alt="" aria-hidden="true" />
-            </span>
-          </button>
+                <span className="venue-booking-card__input-icon">
+                  <img src={calendarIcon} alt="" aria-hidden="true" />
+                </span>
+              </button>
 
-          {isDatePickerOpen && (
-            <div
-              id="venue-date-picker"
-              className="venue-booking-card__dropdown-panel venue-booking-card__dropdown-panel--calendar"
-            >
-              <VenueDatePicker
-                bookings={bookings}
-                price={price}
-                startDate={startDate}
-                endDate={endDate}
-                setStartDate={setStartDate}
-                setEndDate={setEndDate}
-                nights={nights}
-                onApply={closeDatePicker}
-                onInvalidDateSelection={handleInvalidDateSelection}
-              />
+              {isDatePickerOpen && (
+                <div
+                  id="venue-date-picker"
+                  className="venue-booking-card__dropdown-panel venue-booking-card__dropdown-panel--calendar"
+                >
+                  <VenueDatePicker
+                    bookings={bookings}
+                    price={price}
+                    startDate={startDate}
+                    endDate={endDate}
+                    setStartDate={setStartDate}
+                    setEndDate={setEndDate}
+                    nights={nights}
+                    onApply={closeDatePicker}
+                    onInvalidDateSelection={handleInvalidDateSelection}
+                  />
+                </div>
+              )}
             </div>
-          )}
-        </div>
 
-        <div className="venue-booking-card__dropdown">
-          <button
-            type="button"
-            className="venue-booking-card__input"
-            onClick={toggleGuestPicker}
-            aria-expanded={isGuestPickerOpen}
-            aria-controls="venue-guest-picker"
-          >
-            <span>{guests > 1 ? `${guests} guests` : "Select guests"}</span>
+            <div className="venue-booking-card__dropdown">
+              <button
+                type="button"
+                className="venue-booking-card__input"
+                onClick={toggleGuestPicker}
+                aria-expanded={isGuestPickerOpen}
+                aria-controls="venue-guest-picker"
+              >
+                <span>{guests > 1 ? `${guests} guests` : "Select guests"}</span>
 
-            <span className="venue-booking-card__input-icon">
-              <img src={usersIcon} alt="" aria-hidden="true" />
-            </span>
-          </button>
+                <span className="venue-booking-card__input-icon">
+                  <img src={usersIcon} alt="" aria-hidden="true" />
+                </span>
+              </button>
 
-          {isGuestPickerOpen && (
-            <div
-              id="venue-guest-picker"
-              className="venue-booking-card__dropdown-panel venue-booking-card__dropdown-panel--guests"
-            >
-              <GuestPicker
-                guests={guests}
-                maxGuests={maxGuests}
-                setGuests={setGuests}
-                onApply={closeGuestPicker}
-              />
+              {isGuestPickerOpen && (
+                <div
+                  id="venue-guest-picker"
+                  className="venue-booking-card__dropdown-panel venue-booking-card__dropdown-panel--guests"
+                >
+                  <GuestPicker
+                    guests={guests}
+                    maxGuests={maxGuests}
+                    setGuests={setGuests}
+                    onApply={closeGuestPicker}
+                  />
+                </div>
+              )}
             </div>
-          )}
-        </div>
 
-        <button
-          type="button"
-          className="venue-booking-card__book-button"
-          disabled={!startDate || !endDate || nights <= 0 || isSubmitting}
-          onClick={handleBookNow}
-        >
-          {isSubmitting ? "Booking..." : "Book now"}
-        </button>
+            <button
+              type="button"
+              className="venue-booking-card__book-button"
+              disabled={!startDate || !endDate || nights <= 0 || isSubmitting}
+              onClick={handleBookNow}
+            >
+              {isSubmitting ? "Booking..." : "Book now"}
+            </button>
+          </>
+        )}
       </div>
     </aside>
   );
