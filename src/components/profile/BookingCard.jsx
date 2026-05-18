@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 
 import {
@@ -11,9 +12,18 @@ import {
  * @param {object} props - Component props.
  * @param {object} props.booking - Booking data.
  * @param {"customer" | "manager"} props.variant - Card context.
+ * @param {Function} [props.onCancelBooking] - Cancel booking handler.
+ * @param {boolean} [props.isCancelling] - Cancel loading state.
  * @returns {JSX.Element} Booking card.
  */
-export default function BookingCard({ booking, variant = "customer" }) {
+export default function BookingCard({
+  booking,
+  variant = "customer",
+  onCancelBooking,
+  isCancelling = false,
+}) {
+  const [isConfirmingCancel, setIsConfirmingCancel] = useState(false);
+
   const venue = booking.venue || {};
   const venueName = venue.name || booking.venueName || "Venue not added";
   const venueId = venue.id || booking.venueId;
@@ -22,6 +32,28 @@ export default function BookingCard({ booking, variant = "customer" }) {
   const dateRange = formatBookingDateRange(booking);
   const guests = booking.guests || 1;
   const customerName = booking.customer?.name || booking.customerName;
+  const canCancel = variant === "customer" && onCancelBooking;
+
+  /**
+   * Opens cancel confirmation.
+   */
+  function handleOpenCancelConfirm() {
+    setIsConfirmingCancel(true);
+  }
+
+  /**
+   * Closes cancel confirmation.
+   */
+  function handleCloseCancelConfirm() {
+    setIsConfirmingCancel(false);
+  }
+
+  /**
+   * Confirms booking cancellation.
+   */
+  function handleConfirmCancel() {
+    onCancelBooking?.(booking.id);
+  }
 
   return (
     <article className="profile-page__booking-card">
@@ -76,6 +108,44 @@ export default function BookingCard({ booking, variant = "customer" }) {
             </div>
           )}
         </dl>
+
+        {canCancel && !isConfirmingCancel && (
+          <div className="profile-page__booking-card-actions">
+            <button
+              type="button"
+              className="ui-btn-danger"
+              onClick={handleOpenCancelConfirm}
+            >
+              Cancel booking
+            </button>
+          </div>
+        )}
+
+        {canCancel && isConfirmingCancel && (
+          <div className="profile-page__booking-cancel-confirm">
+            <p>Cancel this booking?</p>
+
+            <div className="profile-page__booking-cancel-actions">
+              <button
+                type="button"
+                className="ui-btn-secondary"
+                onClick={handleCloseCancelConfirm}
+                disabled={isCancelling}
+              >
+                Keep booking
+              </button>
+
+              <button
+                type="button"
+                className="ui-btn-danger"
+                onClick={handleConfirmCancel}
+                disabled={isCancelling}
+              >
+                {isCancelling ? "Cancelling..." : "Yes, cancel"}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </article>
   );

@@ -11,3 +11,14 @@ export function createBooking(bookingData) {
     body: bookingData,
   });
 }
+
+/**
+ * Deletes an existing booking.
+ * @param {string} id - Booking ID.
+ * @returns {Promise<object|null>} Deleted booking response.
+ */
+export function deleteBooking(id) {
+  return request(`/holidaze/bookings/${id}`, {
+    method: "DELETE",
+  });
+}

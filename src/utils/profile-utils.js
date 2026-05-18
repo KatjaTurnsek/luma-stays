@@ -114,3 +114,16 @@ export function getUpcomingBookings(venues) {
     .filter((booking) => new Date(booking.dateTo) >= today)
     .sort((a, b) => new Date(a.dateFrom) - new Date(b.dateFrom));
 }
+
+/**
+ * Gets upcoming bookings for the logged-in customer.
+ * @param {Array} bookings - Customer bookings.
+ * @returns {Array} Upcoming customer bookings.
+ */
+export function getUpcomingCustomerBookings(bookings) {
+  const today = new Date();
+
+  return (bookings || [])
+    .filter((booking) => new Date(booking.dateTo) >= today)
+    .sort((a, b) => new Date(a.dateFrom) - new Date(b.dateFrom));
+}
