@@ -2,10 +2,11 @@ import { request } from "./http-client";
 
 /**
  * Gets venues from the Holidaze API.
+ * @param {number} limit - Number of venues to request.
  * @returns {Promise<object>} Venues response.
  */
-export function getVenues() {
-  return request("/holidaze/venues?sort=created&sortOrder=desc&limit=12");
+export function getVenues(limit = 12) {
+  return request(`/holidaze/venues?sort=created&sortOrder=desc&limit=${limit}`);
 }
 
 /**
