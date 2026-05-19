@@ -4,7 +4,6 @@
 
 .venues-page__intro {
   padding: var(--space-xl) 0 var(--space-lg);
-  border-bottom: 1px solid var(--color-border, #eae1d6);
 }
 
 .venues-page__intro h1 {
@@ -21,7 +20,63 @@
 }
 
 .venues-page__content {
-  padding: var(--space-xl) 0;
+  padding: var(--space-lg) 0 var(--space-xl);
+}
+
+.venues-page__search {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+  padding: var(--space-lg);
+  border: 1px solid var(--color-charcoal, #2b2b2b);
+  border-radius: var(--radius-md, 10px);
+  background-color: var(--color-warm-ivory, #f7f3ee);
+}
+
+.venues-page__search-field {
+  display: flex;
+  width: 100%;
+}
+
+.venues-page__search-field input {
+  flex: 1;
+  min-width: 0;
+  min-height: 40px;
+  border: 1px solid var(--color-charcoal, #2b2b2b);
+  border-right: 0;
+  border-radius: 10px 0 0 10px;
+  background-color: #ffffff;
+  padding: 0 var(--space-md);
+  color: var(--color-charcoal, #2b2b2b);
+  font: inherit;
+}
+
+.venues-page__search-field input:focus {
+  outline: 3px solid rgba(85, 107, 93, 0.25);
+  outline-offset: 2px;
+}
+
+.venues-page__search-icon {
+  width: 40px;
+  min-width: 40px;
+  display: grid;
+  place-items: center;
+  background-color: var(--color-charcoal, #2b2b2b);
+  border-radius: 0 10px 10px 0;
+}
+
+.venues-page__search-icon img {
+  width: 24px;
+  height: 24px;
+  filter: brightness(0) saturate(100%) invert(96%) sepia(8%) saturate(329%)
+    hue-rotate(336deg) brightness(104%) contrast(94%);
+}
+
+.venues-page__search-button {
+  min-height: 40px;
+  min-width: 100px;
 }
 
 .venues-page__header {
@@ -64,7 +119,7 @@
 
 @media (max-width: 767px) {
   .venues-page__intro {
-    padding: var(--space-lg) 0;
+    padding: var(--space-lg) 0 var(--space-md);
     text-align: center;
   }
 
@@ -78,7 +133,18 @@
   }
 
   .venues-page__content {
-    padding: var(--space-lg) 0;
+    padding: var(--space-md) 0 var(--space-lg);
+  }
+
+  .venues-page__search {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+    padding: var(--space-md);
+  }
+
+  .venues-page__search-button {
+    width: 100%;
+    justify-self: stretch;
   }
 
   .venues-page__header {

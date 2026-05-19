@@ -1,89 +1,28 @@
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 import Loader from "../components/Loader";
 import UiAlert from "../components/UiAlert";
 import VenueCard from "../components/VenueCard";
 
 import { getVenues } from "../api/venues-api";
+import { filterVenues, formatVenueCardData } from "../utils/venue-utils";
 
-import placeholderImage from "../assets/images/venue-01.webp";
+import locationIcon from "../assets/icons/location.svg";
+import guestsIcon from "../assets/icons/users.svg";
 
 import "../styles/venues.css";
 
-/**
- * Gets readable location text from API location data.
- * @param {object} location - Venue location data.
- * @returns {string} Location text.
- */
-function getLocationText(location) {
-  const city = location?.city;
-  const country = location?.country;
-
-  if (city && country) {
-    return `${city}, ${country}`;
-  }
-
-  if (city) {
-    return city;
-  }
-
-  if (country) {
-    return country;
-  }
-
-  return "Location not added";
-}
-
-/**
- * Gets venue amenity names from API meta data.
- * @param {object} meta - Venue meta data.
- * @returns {string[]} Amenity names.
- */
-function getVenueAmenities(meta) {
-  const amenities = [];
-
-  if (meta?.wifi) {
-    amenities.push("wifi");
-  }
-
-  if (meta?.parking) {
-    amenities.push("parking");
-  }
-
-  if (meta?.pets) {
-    amenities.push("pets");
-  }
-
-  if (meta?.breakfast) {
-    amenities.push("breakfast");
-  }
-
-  return amenities;
-}
-
-/**
- * Converts API venue data into the format used by VenueCard.
- * @param {object} venue - Venue from API.
- * @returns {object} Formatted venue card data.
- */
-function formatVenueCardData(venue) {
-  return {
-    id: venue.id,
-    title: venue.name,
-    location: getLocationText(venue.location),
-    price: `${venue.price} EUR / night`,
-    guests: `${venue.maxGuests} guests`,
-    rating: venue.rating ? venue.rating.toString().replace(".", ",") : "0",
-    image: venue.media?.[0]?.url || placeholderImage,
-    amenities: getVenueAmenities(venue.meta),
-  };
-}
-
 export default function VenuesPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const [venues, setVenues] = useState([]);
   const [visibleCount, setVisibleCount] = useState(9);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
+
+  const searchValue = searchParams.get("search") || "";
+  const guestValue = searchParams.get("guests") || "";
 
   useEffect(() => {
     async function loadVenues() {
@@ -102,11 +41,48 @@ export default function VenuesPage() {
     loadVenues();
   }, []);
 
-  const visibleVenues = venues.slice(0, visibleCount);
-  const hasMoreVenues = visibleCount < venues.length;
+  const filteredVenues = filterVenues(venues, {
+    search: searchValue,
+    guests: guestValue,
+  });
+
+  const visibleVenues = filteredVenues.slice(0, visibleCount);
+  const hasMoreVenues = visibleCount < filteredVenues.length;
+
+  function handleSearchSubmit(event) {
+    event.preventDefault();
+  }
 
   function handleLoadMore() {
     setVisibleCount((currentCount) => currentCount + 9);
+  }
+
+  function handleSearchChange(event) {
+    const nextSearchParams = new URLSearchParams(searchParams);
+    const value = event.target.value;
+
+    if (value.trim()) {
+      nextSearchParams.set("search", value);
+    } else {
+      nextSearchParams.delete("search");
+    }
+
+    setVisibleCount(9);
+    setSearchParams(nextSearchParams);
+  }
+
+  function handleGuestsChange(event) {
+    const nextSearchParams = new URLSearchParams(searchParams);
+    const value = event.target.value;
+
+    if (value) {
+      nextSearchParams.set("guests", value);
+    } else {
+      nextSearchParams.delete("guests");
+    }
+
+    setVisibleCount(9);
+    setSearchParams(nextSearchParams);
   }
 
   return (
@@ -120,6 +96,46 @@ export default function VenuesPage() {
 
       <section className="venues-page__content">
         <div className="container">
+          <form
+            className="venues-page__search"
+            aria-label="Filter stays"
+            onSubmit={handleSearchSubmit}
+          >
+            <label className="venues-page__search-field">
+              <span className="visually-hidden">Location or stay name</span>
+              <input
+                type="search"
+                value={searchValue}
+                onChange={handleSearchChange}
+                placeholder="Location"
+              />
+              <span className="venues-page__search-icon">
+                <img src={locationIcon} alt="" aria-hidden="true" />
+              </span>
+            </label>
+
+            <label className="venues-page__search-field">
+              <span className="visually-hidden">Guests</span>
+              <input
+                type="number"
+                min="1"
+                value={guestValue}
+                onChange={handleGuestsChange}
+                placeholder="Guests"
+              />
+              <span className="venues-page__search-icon">
+                <img src={guestsIcon} alt="" aria-hidden="true" />
+              </span>
+            </label>
+
+            <button
+              type="submit"
+              className="ui-btn-primary venues-page__search-button"
+            >
+              Search
+            </button>
+          </form>
+
           {isLoading && <Loader text="Loading stays..." />}
 
           {!isLoading && errorMessage && (
@@ -140,25 +156,37 @@ export default function VenuesPage() {
           {!isLoading && !errorMessage && venues.length > 0 && (
             <>
               <div className="venues-page__header">
-                <h2>{venues.length} stays found</h2>
+                <h2>
+                  {filteredVenues.length}{" "}
+                  {filteredVenues.length === 1 ? "stay" : "stays"} found
+                </h2>
               </div>
 
-              <div className="venues-page__grid">
-                {visibleVenues.map((venue) => (
-                  <VenueCard venue={venue} key={venue.id} />
-                ))}
-              </div>
+              {filteredVenues.length === 0 ? (
+                <UiAlert
+                  message="No stays match your search. Try another location or guest count."
+                  type="info"
+                />
+              ) : (
+                <>
+                  <div className="venues-page__grid">
+                    {visibleVenues.map((venue) => (
+                      <VenueCard venue={venue} key={venue.id} />
+                    ))}
+                  </div>
 
-              {hasMoreVenues && (
-                <div className="venues-page__cta">
-                  <button
-                    type="button"
-                    className="ui-btn-secondary"
-                    onClick={handleLoadMore}
-                  >
-                    Load more stays
-                  </button>
-                </div>
+                  {hasMoreVenues && (
+                    <div className="venues-page__cta">
+                      <button
+                        type="button"
+                        className="ui-btn-secondary"
+                        onClick={handleLoadMore}
+                      >
+                        Load more stays
+                      </button>
+                    </div>
+                  )}
+                </>
               )}
             </>
           )}

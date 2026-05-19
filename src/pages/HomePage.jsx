@@ -1,114 +1,28 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import VenueCard from "../components/VenueCard";
 import Loader from "../components/Loader";
 import UiAlert from "../components/UiAlert";
 
 import { getVenues } from "../api/venues-api";
+import { filterVenues, formatVenueCardData } from "../utils/venue-utils";
 
 import heroDesktop from "../assets/images/hero-desktop.webp";
 import heroMobile from "../assets/images/hero-mobile.webp";
 import locationIcon from "../assets/icons/location.svg";
-import calendarIcon from "../assets/icons/calendar.svg";
 import guestsIcon from "../assets/icons/users.svg";
 import chevronDownIcon from "../assets/icons/chevron-down.svg";
-import placeholderImage from "../assets/images/venue-01.webp";
 
 import "../styles/home.css";
 
-/**
- * Converts API venue data into the format used by VenueCard.
- * @param {object} venue - Venue from API
- * @returns {object} Formatted venue card data
- */
-function formatVenueCardData(venue) {
-  return {
-    id: venue.id,
-    title: venue.name,
-    location: getLocationText(venue.location),
-    price: `${venue.price} EUR / night`,
-    guests: `${venue.maxGuests} guests`,
-    rating: venue.rating ? venue.rating.toString().replace(".", ",") : "0",
-    image: venue.media?.[0]?.url || placeholderImage,
-    amenities: getVenueAmenities(venue.meta),
-  };
-}
-
-/**
- * Gets readable location text from API location data.
- * @param {object} location - Venue location data
- * @returns {string} Location text
- */
-function getLocationText(location) {
-  const city = location?.city;
-  const country = location?.country;
-
-  if (city && country) {
-    return `${city}, ${country}`;
-  }
-
-  if (city) {
-    return city;
-  }
-
-  if (country) {
-    return country;
-  }
-
-  return "Location not added";
-}
-
-/**
- * Gets venue amenity names from API meta data.
- * @param {object} meta - Venue meta data
- * @returns {string[]} Amenity names
- */
-function getVenueAmenities(meta) {
-  const amenities = [];
-
-  if (meta?.wifi) {
-    amenities.push("wifi");
-  }
-
-  if (meta?.parking) {
-    amenities.push("parking");
-  }
-
-  if (meta?.pets) {
-    amenities.push("pets");
-  }
-
-  if (meta?.breakfast) {
-    amenities.push("breakfast");
-  }
-
-  return amenities;
-}
-
-/**
- * Checks if a venue matches the search text.
- * @param {object} venue - Formatted venue card data
- * @param {string} searchText - Search input value
- * @returns {boolean} True if venue matches search
- */
-function venueMatchesSearch(venue, searchText) {
-  const normalizedSearch = searchText.trim().toLowerCase();
-
-  if (!normalizedSearch) {
-    return true;
-  }
-
-  return (
-    venue.title.toLowerCase().includes(normalizedSearch) ||
-    venue.location.toLowerCase().includes(normalizedSearch)
-  );
-}
-
 export default function HomePage() {
+  const navigate = useNavigate();
+
   const [venues, setVenues] = useState([]);
   const [visibleVenues, setVisibleVenues] = useState([]);
   const [searchValue, setSearchValue] = useState("");
+  const [guestValue, setGuestValue] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -121,7 +35,7 @@ export default function HomePage() {
         setVenues(formattedVenues);
         setVisibleVenues(formattedVenues.slice(0, 3));
       } catch (error) {
-        setErrorMessage(error.message);
+        setErrorMessage(error.message || "Could not load stays.");
       } finally {
         setIsLoading(false);
       }
@@ -133,9 +47,48 @@ export default function HomePage() {
   function handleSearchSubmit(event) {
     event.preventDefault();
 
-    const matchingVenues = venues.filter((venue) =>
-      venueMatchesSearch(venue, searchValue)
-    );
+    const params = new URLSearchParams();
+
+    if (searchValue.trim()) {
+      params.set("search", searchValue.trim());
+    }
+
+    if (guestValue) {
+      params.set("guests", guestValue);
+    }
+
+    navigate(`/venues${params.toString() ? `?${params.toString()}` : ""}`);
+  }
+
+  function handlePreviewSearch() {
+    const matchingVenues = filterVenues(venues, {
+      search: searchValue,
+      guests: guestValue,
+    });
+
+    setVisibleVenues(matchingVenues.slice(0, 3));
+  }
+
+  function handleSearchValueChange(event) {
+    const nextValue = event.target.value;
+    setSearchValue(nextValue);
+
+    const matchingVenues = filterVenues(venues, {
+      search: nextValue,
+      guests: guestValue,
+    });
+
+    setVisibleVenues(matchingVenues.slice(0, 3));
+  }
+
+  function handleGuestValueChange(event) {
+    const nextValue = event.target.value;
+    setGuestValue(nextValue);
+
+    const matchingVenues = filterVenues(venues, {
+      search: searchValue,
+      guests: nextValue,
+    });
 
     setVisibleVenues(matchingVenues.slice(0, 3));
   }
@@ -169,9 +122,9 @@ export default function HomePage() {
             <span className="visually-hidden">Location or stay name</span>
             <input
               type="search"
-              placeholder="Location"
+              placeholder="Location or stay name"
               value={searchValue}
-              onChange={(event) => setSearchValue(event.target.value)}
+              onChange={handleSearchValueChange}
             />
             <span>
               <img src={locationIcon} alt="" aria-hidden="true" />
@@ -179,16 +132,14 @@ export default function HomePage() {
           </label>
 
           <label className="home-search__field">
-            <span className="visually-hidden">Dates</span>
-            <input type="text" placeholder="Dates" />
-            <span>
-              <img src={calendarIcon} alt="" aria-hidden="true" />
-            </span>
-          </label>
-
-          <label className="home-search__field">
             <span className="visually-hidden">Guests</span>
-            <input type="text" placeholder="Guests" />
+            <input
+              type="number"
+              min="1"
+              placeholder="Guests"
+              value={guestValue}
+              onChange={handleGuestValueChange}
+            />
             <span>
               <img src={guestsIcon} alt="" aria-hidden="true" />
             </span>
@@ -227,12 +178,18 @@ export default function HomePage() {
 
           {isLoading && <Loader text="Loading stays..." />}
 
-          {errorMessage && <UiAlert message={errorMessage} type="error" />}
+          {errorMessage && (
+            <UiAlert
+              message={errorMessage}
+              type="error"
+              onClose={() => setErrorMessage("")}
+            />
+          )}
 
           {!isLoading && !errorMessage && visibleVenues.length === 0 && (
             <UiAlert
               message="No stays found. Try another search."
-              type="error"
+              type="info"
             />
           )}
 
