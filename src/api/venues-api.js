@@ -1,27 +1,30 @@
 import { request } from "./http-client";
 
 /**
- * Gets venues from the Holidaze API.
- * @param {number} limit - Number of venues to request.
- * @returns {Promise<object>} Venues response.
+ * Gets a list of venues from the Holidaze API.
+ * Venues are returned newest first and limited by the provided amount.
+ * @param {number} [limit=12] - Number of venues to request.
+ * @returns {Promise<object|null>} Venues API response.
  */
 export function getVenues(limit = 12) {
   return request(`/holidaze/venues?sort=created&sortOrder=desc&limit=${limit}`);
 }
 
 /**
- * Gets one venue by ID from the Holidaze API.
+ * Gets one venue by ID, including owner and booking data.
+ * Used by the venue details page and edit venue page.
  * @param {string} id - Venue ID.
- * @returns {Promise<object>} Venue response.
+ * @returns {Promise<object|null>} Venue API response.
  */
 export function getVenueById(id) {
   return request(`/holidaze/venues/${id}?_owner=true&_bookings=true`);
 }
 
 /**
- * Gets venues owned by a profile.
- * @param {string} profileName - Profile name.
- * @returns {Promise<object|null>} Profile venues response.
+ * Gets venues owned by a specific profile.
+ * Includes booking data so the venue manager profile can show booking overview.
+ * @param {string} profileName - Profile name of the venue manager.
+ * @returns {Promise<object|null>} Profile venues API response.
  */
 export function getProfileVenues(profileName) {
   return request(
@@ -32,9 +35,9 @@ export function getProfileVenues(profileName) {
 }
 
 /**
- * Creates a new venue.
- * @param {object} venueData - Venue form data.
- * @returns {Promise<object|null>} Created venue response.
+ * Creates a new venue for the logged-in venue manager.
+ * @param {object} venueData - Venue data from the create venue form.
+ * @returns {Promise<object|null>} Created venue API response.
  */
 export function createVenue(venueData) {
   return request("/holidaze/venues", {
@@ -44,10 +47,10 @@ export function createVenue(venueData) {
 }
 
 /**
- * Updates an existing venue.
+ * Updates an existing venue owned by the logged-in venue manager.
  * @param {string} id - Venue ID.
- * @param {object} venueData - Updated venue form data.
- * @returns {Promise<object|null>} Updated venue response.
+ * @param {object} venueData - Updated venue data from the edit venue form.
+ * @returns {Promise<object|null>} Updated venue API response.
  */
 export function updateVenue(id, venueData) {
   return request(`/holidaze/venues/${id}`, {
@@ -57,9 +60,9 @@ export function updateVenue(id, venueData) {
 }
 
 /**
- * Deletes an existing venue.
+ * Deletes an existing venue owned by the logged-in venue manager.
  * @param {string} id - Venue ID.
- * @returns {Promise<object|null>} Deleted venue response.
+ * @returns {Promise<object|null>} Deleted venue API response or null.
  */
 export function deleteVenue(id) {
   return request(`/holidaze/venues/${id}`, {

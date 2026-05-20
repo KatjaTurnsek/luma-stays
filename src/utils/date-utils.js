@@ -1,16 +1,18 @@
 /**
- * Formats a date as YYYY-MM-DD.
+ * Formats a Date object as a YYYY-MM-DD key.
+ * Used for comparing calendar dates without time values.
  * @param {Date} date - Date object.
- * @returns {string} Date key.
+ * @returns {string} Date key in YYYY-MM-DD format.
  */
 export function getDateKey(date) {
   return date.toISOString().split("T")[0];
 }
 
 /**
- * Gets booked date keys from API bookings.
- * @param {Array} bookings - Venue bookings.
- * @returns {Set<string>} Booked date keys.
+ * Gets all booked date keys from venue booking data.
+ * Each booking is expanded into individual date keys between dateFrom and dateTo.
+ * @param {Array<object>} [bookings=[]] - Venue bookings from the API.
+ * @returns {Set<string>} Set of booked date keys.
  */
 export function getBookedDateKeys(bookings = []) {
   const bookedDates = new Set();
@@ -30,10 +32,11 @@ export function getBookedDateKeys(bookings = []) {
 }
 
 /**
- * Gets the number of nights between two dates.
- * @param {Date | null} startDate - Start date.
- * @param {Date | null} endDate - End date.
- * @returns {number} Number of nights.
+ * Gets the number of nights between two selected dates.
+ * Returns 0 when either date is missing.
+ * @param {Date|null} startDate - Selected start date.
+ * @param {Date|null} endDate - Selected end date.
+ * @returns {number} Number of nights between the dates.
  */
 export function getNightCount(startDate, endDate) {
   if (!startDate || !endDate) {
@@ -45,10 +48,11 @@ export function getNightCount(startDate, endDate) {
 }
 
 /**
- * Checks if a selected date range includes a booked date.
- * @param {Date} startDate - Start date.
- * @param {Date} endDate - End date.
- * @param {Set<string>} bookedDateKeys - Booked date keys.
+ * Checks if a selected date range contains any booked date.
+ * Used to prevent customers from booking unavailable dates.
+ * @param {Date} startDate - Selected start date.
+ * @param {Date} endDate - Selected end date.
+ * @param {Set<string>} bookedDateKeys - Set of booked date keys.
  * @returns {boolean} True if the range includes a booked date.
  */
 export function rangeHasBookedDate(startDate, endDate, bookedDateKeys) {
@@ -66,9 +70,10 @@ export function rangeHasBookedDate(startDate, endDate, bookedDateKeys) {
 }
 
 /**
- * Gets days for one visible month.
- * @param {Date} visibleMonth - Month to show.
- * @returns {Array<Date | null>} Calendar days.
+ * Gets calendar grid days for one visible month.
+ * Empty slots before the first day of the month are returned as null values.
+ * @param {Date} visibleMonth - Month shown in the date picker.
+ * @returns {Array<Date|null>} Calendar grid values for the month.
  */
 export function getMonthDays(visibleMonth) {
   const year = visibleMonth.getFullYear();

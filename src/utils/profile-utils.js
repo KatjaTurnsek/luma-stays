@@ -1,18 +1,22 @@
 import placeholderImage from "../assets/images/venue-01.webp";
 
 /**
- * Gets the best available avatar URL from auth data.
- * @param {object} auth - Saved auth data.
- * @returns {string|null} Avatar URL or null.
+ * Gets the best available avatar URL from saved auth data.
+ * Used by the profile summary and header avatar display.
+ * @param {object|null} auth - Saved auth data.
+ * @param {object} [auth.avatar] - Avatar object from the API.
+ * @param {string} [auth.avatar.url] - Avatar image URL.
+ * @returns {string|null} Avatar URL or null when no avatar exists.
  */
 export function getAvatarUrl(auth) {
   return auth?.avatar?.url || null;
 }
 
 /**
- * Checks if a string is a valid URL.
- * @param {string} value - URL value.
- * @returns {boolean} True if valid URL.
+ * Checks if a string is a valid HTTP or HTTPS URL.
+ * Used for avatar URL validation.
+ * @param {string} value - URL value to validate.
+ * @returns {boolean} True if the value is a valid HTTP or HTTPS URL.
  */
 export function isValidUrl(value) {
   try {
@@ -24,9 +28,12 @@ export function isValidUrl(value) {
 }
 
 /**
- * Gets readable location text.
+ * Gets readable location text from a venue location object.
+ * Falls back to a default message if city and country are missing.
  * @param {object} location - Venue location object.
- * @returns {string} Location text.
+ * @param {string} [location.city] - Venue city.
+ * @param {string} [location.country] - Venue country.
+ * @returns {string} Readable location text.
  */
 export function getLocationText(location) {
   const city = location?.city;
@@ -48,18 +55,20 @@ export function getLocationText(location) {
 }
 
 /**
- * Gets the first venue image URL.
+ * Gets the first image URL from a venue.
+ * Falls back to a local placeholder image when the venue has no media.
  * @param {object} venue - Venue data.
- * @returns {string} Image URL.
+ * @param {Array<object>} [venue.media] - Venue media array.
+ * @returns {string} Venue image URL or placeholder image.
  */
 export function getVenueImage(venue) {
   return venue?.media?.[0]?.url || placeholderImage;
 }
 
 /**
- * Formats a date for booking summaries.
- * @param {string} dateString - Date string.
- * @returns {string} Formatted date.
+ * Formats a date for compact booking summaries.
+ * @param {string} dateString - Date string from the API.
+ * @returns {string} Formatted date, or an empty string when missing.
  */
 export function formatBookingDate(dateString) {
   if (!dateString) {
@@ -73,9 +82,11 @@ export function formatBookingDate(dateString) {
 }
 
 /**
- * Formats a booking date range.
+ * Formats a booking date range for booking cards.
  * @param {object} booking - Booking data.
- * @returns {string} Date range text.
+ * @param {string} booking.dateFrom - Booking start date.
+ * @param {string} booking.dateTo - Booking end date.
+ * @returns {string} Readable date range text.
  */
 export function formatBookingDateRange(booking) {
   const dateFrom = formatBookingDate(booking.dateFrom);
@@ -89,9 +100,10 @@ export function formatBookingDateRange(booking) {
 }
 
 /**
- * Gets upcoming bookings from owned venues.
- * @param {Array} venues - Owned venue list.
- * @returns {Array} Upcoming bookings.
+ * Gets upcoming bookings from venues owned by a venue manager.
+ * Adds venue details to each booking so booking overview cards can display venue information.
+ * @param {Array<object>} venues - Owned venue list.
+ * @returns {Array<object>} Upcoming bookings sorted by start date.
  */
 export function getUpcomingBookings(venues) {
   const today = new Date();
@@ -117,8 +129,9 @@ export function getUpcomingBookings(venues) {
 
 /**
  * Gets upcoming bookings for the logged-in customer.
- * @param {Array} bookings - Customer bookings.
- * @returns {Array} Upcoming customer bookings.
+ * Past bookings are removed and the remaining bookings are sorted by start date.
+ * @param {Array<object>} bookings - Customer bookings from the API.
+ * @returns {Array<object>} Upcoming customer bookings sorted by start date.
  */
 export function getUpcomingCustomerBookings(bookings) {
   const today = new Date();

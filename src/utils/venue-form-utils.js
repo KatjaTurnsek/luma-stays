@@ -1,3 +1,7 @@
+/**
+ * Default form values used when creating a new venue.
+ * @type {object}
+ */
 export const EMPTY_FORM_VALUES = {
   name: "",
   description: "",
@@ -13,6 +17,10 @@ export const EMPTY_FORM_VALUES = {
   },
 };
 
+/**
+ * Default media field used when a venue has no images yet.
+ * @type {Array<object>}
+ */
 export const EMPTY_MEDIA = [
   {
     url: "",
@@ -21,9 +29,22 @@ export const EMPTY_MEDIA = [
 ];
 
 /**
- * Converts venue API data into form values.
+ * Converts one venue API object into the form shape used by VenueForm.
+ * Used when editing an existing venue.
  * @param {object} venue - Venue API data.
+ * @param {string} [venue.name] - Venue name.
+ * @param {string} [venue.description] - Venue description.
+ * @param {number|string} [venue.price] - Venue price per night.
+ * @param {number|string} [venue.maxGuests] - Maximum number of guests.
+ * @param {number|string} [venue.rating] - Venue rating.
+ * @param {object} [venue.location] - Venue location object.
+ * @param {string} [venue.location.city] - Venue city.
+ * @param {string} [venue.location.country] - Venue country.
+ * @param {object} [venue.meta] - Venue facilities object.
+ * @param {Array<object>} [venue.media] - Venue media array.
  * @returns {object} Form values and media fields.
+ * @returns {object} returns.formValues - Main form values.
+ * @returns {Array<object>} returns.mediaFields - Media input values.
  */
 export function mapVenueToFormValues(venue) {
   const city = venue?.location?.city || "";

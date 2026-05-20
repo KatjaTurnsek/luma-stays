@@ -2,8 +2,11 @@ import placeholderImage from "../assets/images/venue-01.webp";
 
 /**
  * Gets readable location text from API location data.
- * @param {object} location - Venue location data.
- * @returns {string} Location text.
+ * Falls back to a default message if city and country are missing.
+ * @param {object} location - Venue location data from the API.
+ * @param {string} [location.city] - Venue city.
+ * @param {string} [location.country] - Venue country.
+ * @returns {string} Readable location text.
  */
 export function getVenueLocationText(location) {
   const city = location?.city;
@@ -25,9 +28,14 @@ export function getVenueLocationText(location) {
 }
 
 /**
- * Gets venue amenity names from API meta data.
- * @param {object} meta - Venue meta data.
- * @returns {string[]} Amenity names.
+ * Gets available amenity names from venue meta data.
+ * The returned names match the amenity icon keys used by VenueCard.
+ * @param {object} meta - Venue meta data from the API.
+ * @param {boolean} [meta.wifi] - Whether the venue has wifi.
+ * @param {boolean} [meta.parking] - Whether the venue has parking.
+ * @param {boolean} [meta.pets] - Whether the venue allows pets.
+ * @param {boolean} [meta.breakfast] - Whether the venue offers breakfast.
+ * @returns {string[]} List of available amenity names.
  */
 export function getVenueAmenities(meta) {
   const amenities = [];
@@ -52,8 +60,18 @@ export function getVenueAmenities(meta) {
 }
 
 /**
- * Converts API venue data into the format used by VenueCard.
- * @param {object} venue - Venue from API.
+ * Converts one API venue object into the format used by VenueCard and venue filtering.
+ * Adds display values and numeric values so sorting and rendering can use the same data.
+ * @param {object} venue - Venue object from the API.
+ * @param {string} venue.id - Venue ID.
+ * @param {string} venue.name - Venue name.
+ * @param {number|string} venue.price - Venue price per night.
+ * @param {number|string} venue.maxGuests - Maximum number of guests.
+ * @param {number|string} [venue.rating] - Venue rating.
+ * @param {Array} [venue.media] - Venue media array.
+ * @param {object} [venue.location] - Venue location object.
+ * @param {object} [venue.meta] - Venue meta object.
+ * @param {string} [venue.created] - Venue created date.
  * @returns {object} Formatted venue card data.
  */
 export function formatVenueCardData(venue) {
@@ -77,10 +95,13 @@ export function formatVenueCardData(venue) {
 }
 
 /**
- * Checks if a venue matches text search.
+ * Checks if a formatted venue matches the current text search.
+ * Matches against venue title and location.
  * @param {object} venue - Formatted venue card data.
- * @param {string} searchText - Search text.
- * @returns {boolean} True if venue matches.
+ * @param {string} venue.title - Venue title.
+ * @param {string} venue.location - Venue location text.
+ * @param {string} searchText - Search text from input or URL params.
+ * @returns {boolean} True if the venue matches the search text.
  */
 export function venueMatchesSearch(venue, searchText) {
   const normalizedSearch = searchText.trim().toLowerCase();
@@ -96,10 +117,12 @@ export function venueMatchesSearch(venue, searchText) {
 }
 
 /**
- * Checks if a venue can fit the selected number of guests.
+ * Checks if a formatted venue can fit the selected number of guests.
+ * Empty or invalid guest values are treated as no guest filter.
  * @param {object} venue - Formatted venue card data.
- * @param {string | number} guestCount - Guest count from form or URL.
- * @returns {boolean} True if venue can fit the guests.
+ * @param {number} venue.maxGuests - Maximum number of guests the venue allows.
+ * @param {string|number} guestCount - Guest count from form input or URL params.
+ * @returns {boolean} True if the venue can fit the selected guests.
  */
 export function venueMatchesGuests(venue, guestCount) {
   const guests = Number(guestCount);
@@ -112,12 +135,13 @@ export function venueMatchesGuests(venue, guestCount) {
 }
 
 /**
- * Filters venues by search text and guests.
- * @param {Array} venues - Formatted venues.
+ * Filters formatted venues by search text and guest count.
+ * Used by the home page preview and venues listing page.
+ * @param {Array<object>} venues - Formatted venue card data.
  * @param {object} filters - Filter values.
- * @param {string} filters.search - Search text.
- * @param {string | number} filters.guests - Guest count.
- * @returns {Array} Filtered venues.
+ * @param {string} [filters.search] - Search text.
+ * @param {string|number} [filters.guests] - Guest count.
+ * @returns {Array<object>} Filtered venues.
  */
 export function filterVenues(venues, filters) {
   return venues.filter(
@@ -128,10 +152,11 @@ export function filterVenues(venues, filters) {
 }
 
 /**
- * Sorts venues by the selected sort value.
- * @param {Array} venues - Formatted venues.
- * @param {string} sortValue - Sort option.
- * @returns {Array} Sorted venues.
+ * Sorts formatted venues by the selected sort value.
+ * Supports created date, price, and rating sorting.
+ * @param {Array<object>} venues - Formatted venue card data.
+ * @param {string} sortValue - Selected sort option.
+ * @returns {Array<object>} Sorted venues.
  */
 export function sortVenues(venues, sortValue) {
   const venuesToSort = [...venues];

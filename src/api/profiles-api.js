@@ -1,10 +1,14 @@
 import { request } from "./http-client";
 
 /**
- * Updates a Holidaze profile.
+ * Updates a Holidaze profile owned by the logged-in user.
+ * Used for profile changes such as updating the avatar image.
  * @param {string} name - Profile name.
  * @param {object} profileData - Profile update data.
- * @returns {Promise<object|null>} Updated profile response.
+ * @param {object} [profileData.avatar] - Optional avatar object.
+ * @param {string} [profileData.avatar.url] - Avatar image URL.
+ * @param {string} [profileData.avatar.alt] - Avatar image alt text.
+ * @returns {Promise<object|null>} Updated profile API response.
  */
 export function updateProfile(name, profileData) {
   return request(`/holidaze/profiles/${encodeURIComponent(name)}`, {
@@ -14,9 +18,10 @@ export function updateProfile(name, profileData) {
 }
 
 /**
- * Gets bookings for a profile.
+ * Gets bookings for a specific customer profile.
+ * Includes venue data so the customer profile can display booking cards.
  * @param {string} name - Profile name.
- * @returns {Promise<object|null>} Profile bookings response.
+ * @returns {Promise<object|null>} Profile bookings API response.
  */
 export function getProfileBookings(name) {
   return request(
