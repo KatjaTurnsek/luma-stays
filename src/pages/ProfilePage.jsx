@@ -1,25 +1,23 @@
-import { useState } from "react";
 import { Navigate } from "react-router-dom";
 
 import CustomerProfileView from "../components/profile/CustomerProfileView";
 import ProfileSummary from "../components/profile/ProfileSummary";
 import VenueManagerProfileView from "../components/profile/VenueManagerProfileView";
 
-import { getAuth } from "../utils/auth-storage";
+import useAuth from "../hooks/useAuth";
 
 import "../styles/profile.css";
 
 export default function ProfilePage() {
-  const [auth, setAuth] = useState(getAuth());
+  const { authData, setAuthData, isLoggedIn, isVenueManager } = useAuth();
 
-  if (!auth?.accessToken) {
+  if (!isLoggedIn) {
     return <Navigate to="/login" replace />;
   }
 
-  const isVenueManager = Boolean(auth?.venueManager);
   const heroText = isVenueManager
     ? "Manage your venues"
-    : `Welcome back, ${auth?.name || "UserName"}`;
+    : `Welcome back, ${authData?.name || "UserName"}`;
 
   return (
     <div className="profile-page">
@@ -31,10 +29,10 @@ export default function ProfilePage() {
 
       <div className="container profile-page__container">
         <div className="profile-page__grid">
-          <ProfileSummary auth={auth} onAuthUpdate={setAuth} />
+          <ProfileSummary auth={authData} onAuthUpdate={setAuthData} />
 
           {isVenueManager ? (
-            <VenueManagerProfileView auth={auth} />
+            <VenueManagerProfileView auth={authData} />
           ) : (
             <CustomerProfileView />
           )}

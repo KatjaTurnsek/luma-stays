@@ -53,7 +53,10 @@ export default function ProfileSummary({ auth, onAuthUpdate }) {
     event.preventDefault();
     clearMessages();
 
-    const trimmedUrl = avatarInput.trim();
+    const formData = new FormData(event.currentTarget);
+    const trimmedUrl = String(formData.get("avatarUrl") || "").trim();
+
+    setAvatarInput(trimmedUrl);
 
     if (!trimmedUrl) {
       setAvatarError("Avatar URL is required.");
@@ -62,6 +65,11 @@ export default function ProfileSummary({ auth, onAuthUpdate }) {
 
     if (!isValidUrl(trimmedUrl)) {
       setAvatarError("Please add a valid image URL.");
+      return;
+    }
+
+    if (!auth?.name || !auth?.accessToken) {
+      setApiError("Could not update avatar because profile data is missing.");
       return;
     }
 
@@ -87,7 +95,7 @@ export default function ProfileSummary({ auth, onAuthUpdate }) {
 
       setSuccessMessage("Avatar updated.");
     } catch (error) {
-      setApiError(error.message);
+      setApiError(error.message || "Could not update avatar.");
     } finally {
       setIsUpdating(false);
     }
@@ -130,6 +138,7 @@ export default function ProfileSummary({ auth, onAuthUpdate }) {
 
         <input
           id="avatar-url"
+          name="avatarUrl"
           type="url"
           value={avatarInput}
           onChange={handleAvatarChange}

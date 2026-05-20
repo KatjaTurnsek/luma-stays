@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { getAuth, clearAuth } from "../utils/auth-storage";
+import { Link, useNavigate } from "react-router-dom";
+
+import useAuth from "../hooks/useAuth";
 
 import logoDark from "../assets/logos/logo-dark.svg";
 import footerIllustration from "../assets/images/footer-illustration.svg";
@@ -8,34 +8,12 @@ import footerIllustration from "../assets/images/footer-illustration.svg";
 import "../styles/footer.css";
 
 export default function Footer() {
-  const [authData, setAuthData] = useState(getAuth());
+  const { isLoggedIn, isVenueManager, logout } = useAuth();
 
-  const location = useLocation();
   const navigate = useNavigate();
 
-  const isLoggedIn = Boolean(authData?.accessToken);
-  const isVenueManager = Boolean(authData?.venueManager);
-
-  useEffect(() => {
-    setAuthData(getAuth());
-  }, [location.pathname]);
-
-  useEffect(() => {
-    function handleAuthChange() {
-      setAuthData(getAuth());
-    }
-
-    window.addEventListener("luma-auth-change", handleAuthChange);
-
-    return () => {
-      window.removeEventListener("luma-auth-change", handleAuthChange);
-    };
-  }, []);
-
   function handleLogout() {
-    clearAuth();
-    setAuthData(null);
-    window.dispatchEvent(new Event("luma-auth-change"));
+    logout();
     navigate("/");
   }
 

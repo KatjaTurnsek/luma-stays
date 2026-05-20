@@ -5,8 +5,8 @@ import VenueCard from "../components/VenueCard";
 import Loader from "../components/Loader";
 import UiAlert from "../components/UiAlert";
 
-import { getVenues } from "../api/venues-api";
-import { filterVenues, formatVenueCardData } from "../utils/venue-utils";
+import useVenues from "../hooks/useVenues";
+import { filterVenues } from "../utils/venue-utils";
 
 import heroDesktop from "../assets/images/hero-desktop.webp";
 import heroMobile from "../assets/images/hero-mobile.webp";
@@ -18,30 +18,21 @@ import "../styles/home.css";
 export default function HomePage() {
   const navigate = useNavigate();
 
-  const [venues, setVenues] = useState([]);
+  const { venues, isLoadingVenues, venuesError, setVenuesError } =
+    useVenues(12);
+
   const [visibleVenues, setVisibleVenues] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const [guestValue, setGuestValue] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    async function loadVenues() {
-      try {
-        const response = await getVenues();
-        const formattedVenues = response.data.map(formatVenueCardData);
+    const matchingVenues = filterVenues(venues, {
+      search: searchValue,
+      guests: guestValue,
+    });
 
-        setVenues(formattedVenues);
-        setVisibleVenues(formattedVenues.slice(0, 3));
-      } catch (error) {
-        setErrorMessage(error.message || "Could not load stays.");
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    loadVenues();
-  }, []);
+    setVisibleVenues(matchingVenues.slice(0, 3));
+  }, [venues, searchValue, guestValue]);
 
   function handleSearchSubmit(event) {
     event.preventDefault();
@@ -60,27 +51,11 @@ export default function HomePage() {
   }
 
   function handleSearchValueChange(event) {
-    const nextValue = event.target.value;
-    setSearchValue(nextValue);
-
-    const matchingVenues = filterVenues(venues, {
-      search: nextValue,
-      guests: guestValue,
-    });
-
-    setVisibleVenues(matchingVenues.slice(0, 3));
+    setSearchValue(event.target.value);
   }
 
   function handleGuestValueChange(event) {
-    const nextValue = event.target.value;
-    setGuestValue(nextValue);
-
-    const matchingVenues = filterVenues(venues, {
-      search: searchValue,
-      guests: nextValue,
-    });
-
-    setVisibleVenues(matchingVenues.slice(0, 3));
+    setGuestValue(event.target.value);
   }
 
   return (
@@ -150,24 +125,24 @@ export default function HomePage() {
             </div>
           </div>
 
-          {isLoading && <Loader text="Loading stays..." />}
+          {isLoadingVenues && <Loader text="Loading stays..." />}
 
-          {errorMessage && (
+          {venuesError && (
             <UiAlert
-              message={errorMessage}
+              message={venuesError}
               type="error"
-              onClose={() => setErrorMessage("")}
+              onClose={() => setVenuesError("")}
             />
           )}
 
-          {!isLoading && !errorMessage && visibleVenues.length === 0 && (
+          {!isLoadingVenues && !venuesError && visibleVenues.length === 0 && (
             <UiAlert
               message="No stays found. Try another search."
               type="info"
             />
           )}
 
-          {!isLoading && !errorMessage && visibleVenues.length > 0 && (
+          {!isLoadingVenues && !venuesError && visibleVenues.length > 0 && (
             <div className="home-venues__grid">
               {visibleVenues.map((venue) => (
                 <VenueCard venue={venue} key={venue.id} />

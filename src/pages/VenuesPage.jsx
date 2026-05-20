@@ -1,16 +1,12 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 import Loader from "../components/Loader";
 import UiAlert from "../components/UiAlert";
 import VenueCard from "../components/VenueCard";
 
-import { getVenues } from "../api/venues-api";
-import {
-  filterVenues,
-  formatVenueCardData,
-  sortVenues,
-} from "../utils/venue-utils";
+import useVenues from "../hooks/useVenues";
+import { filterVenues, sortVenues } from "../utils/venue-utils";
 
 import locationIcon from "../assets/icons/location.svg";
 import guestsIcon from "../assets/icons/users.svg";
@@ -40,12 +36,13 @@ const SORT_OPTIONS = [
 export default function VenuesPage() {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [venues, setVenues] = useState([]);
+  const { venues, isLoadingVenues, venuesError, setVenuesError } =
+    useVenues(100);
+
   const [visibleCount, setVisibleCount] = useState(9);
   const [sortValue, setSortValue] = useState("created-desc");
   const [isSortOpen, setIsSortOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [isNoResultsAlertVisible, setIsNoResultsAlertVisible] = useState(true);
 
   const searchValue = searchParams.get("search") || "";
   const guestValue = searchParams.get("guests") || "";
@@ -53,23 +50,6 @@ export default function VenuesPage() {
   const selectedSort =
     SORT_OPTIONS.find((option) => option.value === sortValue) ||
     SORT_OPTIONS[0];
-
-  useEffect(() => {
-    async function loadVenues() {
-      try {
-        const response = await getVenues(100);
-        const formattedVenues = (response?.data || []).map(formatVenueCardData);
-
-        setVenues(formattedVenues);
-      } catch (error) {
-        setErrorMessage(error.message || "Could not load venues.");
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    loadVenues();
-  }, []);
 
   const filteredVenues = filterVenues(venues, {
     search: searchValue,
@@ -99,6 +79,7 @@ export default function VenuesPage() {
     }
 
     setVisibleCount(9);
+    setIsNoResultsAlertVisible(true);
     setSearchParams(nextSearchParams);
   }
 
@@ -113,6 +94,7 @@ export default function VenuesPage() {
     }
 
     setVisibleCount(9);
+    setIsNoResultsAlertVisible(true);
     setSearchParams(nextSearchParams);
   }
 
@@ -123,6 +105,7 @@ export default function VenuesPage() {
   function handleSortChange(nextSortValue) {
     setSortValue(nextSortValue);
     setVisibleCount(9);
+    setIsNoResultsAlertVisible(true);
     setIsSortOpen(false);
   }
 
@@ -177,24 +160,24 @@ export default function VenuesPage() {
             </button>
           </form>
 
-          {isLoading && <Loader text="Loading stays..." />}
+          {isLoadingVenues && <Loader text="Loading stays..." />}
 
-          {!isLoading && errorMessage && (
+          {!isLoadingVenues && venuesError && (
             <UiAlert
-              message={errorMessage}
+              message={venuesError}
               type="error"
-              onClose={() => setErrorMessage("")}
+              onClose={() => setVenuesError("")}
             />
           )}
 
-          {!isLoading && !errorMessage && venues.length === 0 && (
+          {!isLoadingVenues && !venuesError && venues.length === 0 && (
             <UiAlert
               message="No stays are available right now. Please check again later."
               type="info"
             />
           )}
 
-          {!isLoading && !errorMessage && venues.length > 0 && (
+          {!isLoadingVenues && !venuesError && venues.length > 0 && (
             <>
               <div className="venues-page__header">
                 <h2>
@@ -240,10 +223,13 @@ export default function VenuesPage() {
               </div>
 
               {sortedVenues.length === 0 ? (
-                <UiAlert
-                  message="No stays match your search. Try another location or guest count."
-                  type="info"
-                />
+                isNoResultsAlertVisible && (
+                  <UiAlert
+                    message="No stays match your search. Try another location or guest count."
+                    type="info"
+                    onClose={() => setIsNoResultsAlertVisible(false)}
+                  />
+                )
               ) : (
                 <>
                   <div className="venues-page__grid">
