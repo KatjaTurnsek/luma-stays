@@ -9,6 +9,9 @@ import RegisterPage from "./pages/RegisterPage";
 import ProfilePage from "./pages/ProfilePage";
 import CreateVenuePage from "./pages/CreateVenuePage";
 import EditVenuePage from "./pages/EditVenuePage";
+import HelpPage from "./pages/HelpPage";
+import TermsPage from "./pages/TermsPage";
+import PrivacyPage from "./pages/PrivacyPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -23,6 +26,9 @@ function App() {
           <Route path="/venues/:id" element={<VenueDetailsPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/help" element={<HelpPage />} />
+          <Route path="/terms" element={<TermsPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
 
           <Route
             path="/profile"
