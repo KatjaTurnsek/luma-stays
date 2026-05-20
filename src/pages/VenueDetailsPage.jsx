@@ -7,6 +7,7 @@ import VenueGallery from "../components/VenueGallery";
 import VenueBookingCard from "../components/VenueBookingCard";
 
 import { getVenueById } from "../api/venues-api";
+import { getVenueLocationText } from "../utils/venue-utils";
 
 import locationIcon from "../assets/icons/location.svg";
 import usersIcon from "../assets/icons/users.svg";
@@ -18,30 +19,6 @@ import wifiIcon from "../assets/icons/wifi.svg";
 import userIcon from "../assets/icons/user.svg";
 
 import "../styles/venue-details.css";
-
-/**
- * Gets readable location text from venue data.
- * @param {object} location - API location object
- * @returns {string} Location text
- */
-function getLocationText(location) {
-  const city = location?.city;
-  const country = location?.country;
-
-  if (city && country) {
-    return `${city}, ${country}`;
-  }
-
-  if (city) {
-    return city;
-  }
-
-  if (country) {
-    return country;
-  }
-
-  return "Location not added";
-}
 
 /**
  * Gets available venue features from API meta data.
@@ -124,7 +101,7 @@ export default function VenueDetailsPage() {
     );
   }
 
-  const locationText = getLocationText(venue.location);
+  const locationText = getVenueLocationText(venue.location);
   const features = getVenueFeatures(venue.meta);
   const owner = venue.owner;
 
