@@ -57,16 +57,22 @@ export function getVenueAmenities(meta) {
  * @returns {object} Formatted venue card data.
  */
 export function formatVenueCardData(venue) {
+  const rating = Number(venue.rating) || 0;
+  const price = Number(venue.price) || 0;
+
   return {
     id: venue.id,
     title: venue.name,
     location: getVenueLocationText(venue.location),
-    price: `${venue.price} EUR / night`,
+    price: `${price} EUR / night`,
+    priceValue: price,
     guests: `${venue.maxGuests} guests`,
     maxGuests: venue.maxGuests || 0,
-    rating: venue.rating ? venue.rating.toString().replace(".", ",") : "0",
+    rating: rating.toString().replace(".", ","),
+    ratingValue: rating,
     image: venue.media?.[0]?.url || placeholderImage,
     amenities: getVenueAmenities(venue.meta),
+    created: venue.created || "",
   };
 }
 
@@ -119,4 +125,28 @@ export function filterVenues(venues, filters) {
       venueMatchesSearch(venue, filters.search || "") &&
       venueMatchesGuests(venue, filters.guests || "")
   );
+}
+
+/**
+ * Sorts venues by the selected sort value.
+ * @param {Array} venues - Formatted venues.
+ * @param {string} sortValue - Sort option.
+ * @returns {Array} Sorted venues.
+ */
+export function sortVenues(venues, sortValue) {
+  const venuesToSort = [...venues];
+
+  if (sortValue === "price-asc") {
+    return venuesToSort.sort((a, b) => a.priceValue - b.priceValue);
+  }
+
+  if (sortValue === "price-desc") {
+    return venuesToSort.sort((a, b) => b.priceValue - a.priceValue);
+  }
+
+  if (sortValue === "rating-desc") {
+    return venuesToSort.sort((a, b) => b.ratingValue - a.ratingValue);
+  }
+
+  return venuesToSort.sort((a, b) => new Date(b.created) - new Date(a.created));
 }

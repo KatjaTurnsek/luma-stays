@@ -12,7 +12,6 @@ import heroDesktop from "../assets/images/hero-desktop.webp";
 import heroMobile from "../assets/images/hero-mobile.webp";
 import locationIcon from "../assets/icons/location.svg";
 import guestsIcon from "../assets/icons/users.svg";
-import chevronDownIcon from "../assets/icons/chevron-down.svg";
 
 import "../styles/home.css";
 
@@ -58,15 +57,6 @@ export default function HomePage() {
     }
 
     navigate(`/venues${params.toString() ? `?${params.toString()}` : ""}`);
-  }
-
-  function handlePreviewSearch() {
-    const matchingVenues = filterVenues(venues, {
-      search: searchValue,
-      guests: guestValue,
-    });
-
-    setVisibleVenues(matchingVenues.slice(0, 3));
   }
 
   function handleSearchValueChange(event) {
@@ -157,22 +147,6 @@ export default function HomePage() {
             <div>
               <h2>Recently added stays</h2>
               <div className="home-venues__title-line"></div>
-            </div>
-
-            <div className="home-sort">
-              <button type="button" className="home-sort__button">
-                <span>Sort by</span>
-                <span className="home-sort__icon">
-                  <img src={chevronDownIcon} alt="" aria-hidden="true" />
-                </span>
-              </button>
-
-              <ul className="home-sort__menu">
-                <li>Recently added</li>
-                <li>Price: low to high</li>
-                <li>Price: high to low</li>
-                <li>Rating: highest first</li>
-              </ul>
             </div>
           </div>
 

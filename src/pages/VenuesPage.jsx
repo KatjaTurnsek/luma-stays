@@ -6,23 +6,53 @@ import UiAlert from "../components/UiAlert";
 import VenueCard from "../components/VenueCard";
 
 import { getVenues } from "../api/venues-api";
-import { filterVenues, formatVenueCardData } from "../utils/venue-utils";
+import {
+  filterVenues,
+  formatVenueCardData,
+  sortVenues,
+} from "../utils/venue-utils";
 
 import locationIcon from "../assets/icons/location.svg";
 import guestsIcon from "../assets/icons/users.svg";
+import chevronDownIcon from "../assets/icons/chevron-down.svg";
 
 import "../styles/venues.css";
+
+const SORT_OPTIONS = [
+  {
+    value: "created-desc",
+    label: "Recently added",
+  },
+  {
+    value: "price-asc",
+    label: "Price: low to high",
+  },
+  {
+    value: "price-desc",
+    label: "Price: high to low",
+  },
+  {
+    value: "rating-desc",
+    label: "Rating: highest first",
+  },
+];
 
 export default function VenuesPage() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [venues, setVenues] = useState([]);
   const [visibleCount, setVisibleCount] = useState(9);
+  const [sortValue, setSortValue] = useState("created-desc");
+  const [isSortOpen, setIsSortOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
 
   const searchValue = searchParams.get("search") || "";
   const guestValue = searchParams.get("guests") || "";
+
+  const selectedSort =
+    SORT_OPTIONS.find((option) => option.value === sortValue) ||
+    SORT_OPTIONS[0];
 
   useEffect(() => {
     async function loadVenues() {
@@ -46,8 +76,9 @@ export default function VenuesPage() {
     guests: guestValue,
   });
 
-  const visibleVenues = filteredVenues.slice(0, visibleCount);
-  const hasMoreVenues = visibleCount < filteredVenues.length;
+  const sortedVenues = sortVenues(filteredVenues, sortValue);
+  const visibleVenues = sortedVenues.slice(0, visibleCount);
+  const hasMoreVenues = visibleCount < sortedVenues.length;
 
   function handleSearchSubmit(event) {
     event.preventDefault();
@@ -83,6 +114,16 @@ export default function VenuesPage() {
 
     setVisibleCount(9);
     setSearchParams(nextSearchParams);
+  }
+
+  function toggleSortMenu() {
+    setIsSortOpen((isOpen) => !isOpen);
+  }
+
+  function handleSortChange(nextSortValue) {
+    setSortValue(nextSortValue);
+    setVisibleCount(9);
+    setIsSortOpen(false);
   }
 
   return (
@@ -157,12 +198,48 @@ export default function VenuesPage() {
             <>
               <div className="venues-page__header">
                 <h2>
-                  {filteredVenues.length}{" "}
-                  {filteredVenues.length === 1 ? "stay" : "stays"} found
+                  {sortedVenues.length}{" "}
+                  {sortedVenues.length === 1 ? "stay" : "stays"} found
                 </h2>
+
+                <div className="venues-page__sort">
+                  <button
+                    type="button"
+                    className="venues-page__sort-button"
+                    onClick={toggleSortMenu}
+                    aria-expanded={isSortOpen}
+                    aria-controls="venues-sort-menu"
+                  >
+                    <span>{selectedSort.label}</span>
+                    <span className="venues-page__sort-icon">
+                      <img src={chevronDownIcon} alt="" aria-hidden="true" />
+                    </span>
+                  </button>
+
+                  {isSortOpen && (
+                    <ul
+                      id="venues-sort-menu"
+                      className="venues-page__sort-menu"
+                    >
+                      {SORT_OPTIONS.map((option) => (
+                        <li key={option.value}>
+                          <button
+                            type="button"
+                            onClick={() => handleSortChange(option.value)}
+                            aria-current={
+                              option.value === sortValue ? "true" : undefined
+                            }
+                          >
+                            {option.label}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
               </div>
 
-              {filteredVenues.length === 0 ? (
+              {sortedVenues.length === 0 ? (
                 <UiAlert
                   message="No stays match your search. Try another location or guest count."
                   type="info"

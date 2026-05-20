@@ -81,7 +81,7 @@
 
 .venues-page__header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: var(--space-lg);
   margin-bottom: var(--space-xl);
@@ -93,6 +93,89 @@
   font-size: 28px;
   font-weight: 600;
   line-height: 36px;
+}
+
+.venues-page__sort {
+  position: relative;
+  width: 230px;
+  flex-shrink: 0;
+}
+
+.venues-page__sort-button {
+  width: 100%;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0 0 var(--space-md);
+  overflow: hidden;
+  border: 1px solid var(--color-charcoal, #2b2b2b);
+  border-radius: 10px;
+  background-color: #ffffff;
+  color: var(--color-charcoal, #2b2b2b);
+  font-family: var(--font-body);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.venues-page__sort-icon {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  background-color: var(--color-charcoal, #2b2b2b);
+}
+
+.venues-page__sort-icon img {
+  width: 24px;
+  height: 24px;
+  filter: brightness(0) saturate(100%) invert(96%) sepia(8%) saturate(329%)
+    hue-rotate(336deg) brightness(104%) contrast(94%);
+}
+
+.venues-page__sort-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  right: 0;
+  z-index: 10;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--color-charcoal, #2b2b2b);
+  border-radius: 10px;
+  background-color: #ffffff;
+  list-style: none;
+  box-shadow: 0 12px 30px rgba(43, 43, 43, 0.12);
+}
+
+.venues-page__sort-menu li {
+  border-bottom: 1px solid var(--color-border, #eae1d6);
+}
+
+.venues-page__sort-menu li:last-child {
+  border-bottom: 0;
+}
+
+.venues-page__sort-menu button {
+  width: 100%;
+  min-height: 44px;
+  border: 0;
+  background: transparent;
+  color: var(--color-primary, #556b5d);
+  padding: 0 var(--space-md);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.venues-page__sort-menu button:hover,
+.venues-page__sort-menu button:focus-visible,
+.venues-page__sort-menu button[aria-current="true"] {
+  background-color: var(--color-soft-sand, #eae1d6);
+  color: var(--color-charcoal, #2b2b2b);
 }
 
 .venues-page__grid {
@@ -148,6 +231,8 @@
   }
 
   .venues-page__header {
+    flex-direction: column;
+    align-items: stretch;
     margin-bottom: var(--space-lg);
     text-align: center;
   }
@@ -156,6 +241,10 @@
     width: 100%;
     font-size: 20px;
     line-height: 28px;
+  }
+
+  .venues-page__sort {
+    width: 100%;
   }
 
   .venues-page__grid {
