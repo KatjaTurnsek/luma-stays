@@ -24,11 +24,7 @@ export default function CreateVenuePage() {
     try {
       setIsSubmitting(true);
 
-      const response = await createVenue({
-        ...payload,
-        rating: 0,
-      });
-
+      const response = await createVenue(payload);
       const venueId = response?.data?.id;
 
       setSuccessMessage("Venue created. Redirecting...");

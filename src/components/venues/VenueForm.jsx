@@ -9,6 +9,7 @@ const EMPTY_FORM_VALUES = {
   description: "",
   price: "",
   maxGuests: "",
+  rating: "",
   cityCountry: "",
   meta: {
     wifi: true,
@@ -69,6 +70,7 @@ export function mapVenueToFormValues(venue) {
       description: venue?.description || "",
       price: venue?.price ? String(venue.price) : "",
       maxGuests: venue?.maxGuests ? String(venue.maxGuests) : "",
+      rating: venue?.rating || venue?.rating === 0 ? String(venue.rating) : "",
       cityCountry: city && country ? `${city}, ${country}` : "",
       meta: {
         wifi: Boolean(venue?.meta?.wifi),
@@ -94,6 +96,7 @@ function validateVenueForm(values, mediaFields) {
   const errors = {};
   const price = Number(values.price);
   const maxGuests = Number(values.maxGuests);
+  const rating = Number(values.rating);
   const location = getLocationFromInput(values.cityCountry);
 
   if (!values.name.trim()) {
@@ -114,6 +117,10 @@ function validateVenueForm(values, mediaFields) {
     errors.maxGuests = "Max guests is required.";
   } else if (Number.isNaN(maxGuests) || maxGuests < 1) {
     errors.maxGuests = "Max guests must be at least 1.";
+  }
+
+  if (values.rating && (Number.isNaN(rating) || rating < 0 || rating > 5)) {
+    errors.rating = "Rating must be between 0 and 5.";
   }
 
   if (!values.cityCountry.trim()) {
@@ -301,6 +308,7 @@ export default function VenueForm({
    */
   function createPayload() {
     const location = getLocationFromInput(formValues.cityCountry);
+    const rating = formValues.rating ? Number(formValues.rating) : 0;
 
     const media = mediaFields
       .filter((mediaItem) => mediaItem.url.trim())
@@ -315,6 +323,7 @@ export default function VenueForm({
       media,
       price: Number(formValues.price),
       maxGuests: Number(formValues.maxGuests),
+      rating,
       meta: {
         wifi: formValues.meta.wifi,
         parking: formValues.meta.parking,
@@ -444,7 +453,7 @@ export default function VenueForm({
                 />
                 <FieldHelper
                   error={formErrors[`media-${index}-alt`]}
-                  helperText='Short description for accessibility, e.g. "Black Wacom tablet on desk".'
+                  helperText='Short description for accessibility, e.g. "Wooden cabin in the forest".'
                 />
               </div>
 
@@ -508,6 +517,29 @@ export default function VenueForm({
             <FieldHelper
               error={formErrors.maxGuests}
               helperText="Add how many guests can stay."
+            />
+          </div>
+        </fieldset>
+
+        <fieldset className="venue-form__section">
+          <legend>Rating:</legend>
+
+          <div className="venue-form__group">
+            <label htmlFor="venue-rating">Venue rating</label>
+            <input
+              id="venue-rating"
+              name="rating"
+              type="number"
+              min="0"
+              max="5"
+              step="0.1"
+              value={formValues.rating}
+              onChange={handleChange}
+              aria-invalid={Boolean(formErrors.rating)}
+            />
+            <FieldHelper
+              error={formErrors.rating}
+              helperText="Optional. Add a rating from 0 to 5."
             />
           </div>
         </fieldset>
