@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
 
 import { clearAuth, getAuth } from "../utils/auth-storage";
 
@@ -9,7 +8,6 @@ import { clearAuth, getAuth } from "../utils/auth-storage";
  */
 export default function useAuth() {
   const [authData, setAuthData] = useState(getAuth());
-  const location = useLocation();
 
   const isLoggedIn = Boolean(authData?.accessToken);
   const isVenueManager = Boolean(authData?.venueManager);
@@ -27,16 +25,11 @@ export default function useAuth() {
   function logout() {
     clearAuth();
     setAuthData(null);
-    window.dispatchEvent(new Event("luma-auth-change"));
   }
 
   useEffect(() => {
-    refreshAuth();
-  }, [location.pathname]);
-
-  useEffect(() => {
     function handleAuthChange() {
-      refreshAuth();
+      setAuthData(getAuth());
     }
 
     window.addEventListener("luma-auth-change", handleAuthChange);

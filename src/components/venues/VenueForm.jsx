@@ -1,30 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import UiAlert from "../UiAlert";
 
+import { EMPTY_FORM_VALUES, EMPTY_MEDIA } from "../../utils/venue-form-utils";
+
 import addIcon from "../../assets/icons/add.svg";
-
-const EMPTY_FORM_VALUES = {
-  name: "",
-  description: "",
-  price: "",
-  maxGuests: "",
-  rating: "",
-  cityCountry: "",
-  meta: {
-    wifi: true,
-    parking: true,
-    pets: true,
-    breakfast: true,
-  },
-};
-
-const EMPTY_MEDIA = [
-  {
-    url: "",
-    alt: "",
-  },
-];
 
 /**
  * Checks if a string is a valid URL.
@@ -51,38 +31,6 @@ function getLocationFromInput(value) {
   return {
     city: parts[0] || "",
     country: parts[1] || "",
-  };
-}
-
-/**
- * Converts venue API data into form values.
- * @param {object} venue - Venue API data.
- * @returns {object} Form values and media fields.
- */
-export function mapVenueToFormValues(venue) {
-  const city = venue?.location?.city || "";
-  const country = venue?.location?.country || "";
-  const media = venue?.media?.length ? venue.media : EMPTY_MEDIA;
-
-  return {
-    formValues: {
-      name: venue?.name || "",
-      description: venue?.description || "",
-      price: venue?.price ? String(venue.price) : "",
-      maxGuests: venue?.maxGuests ? String(venue.maxGuests) : "",
-      rating: venue?.rating || venue?.rating === 0 ? String(venue.rating) : "",
-      cityCountry: city && country ? `${city}, ${country}` : "",
-      meta: {
-        wifi: Boolean(venue?.meta?.wifi),
-        parking: Boolean(venue?.meta?.parking),
-        pets: Boolean(venue?.meta?.pets),
-        breakfast: Boolean(venue?.meta?.breakfast),
-      },
-    },
-    mediaFields: media.map((mediaItem) => ({
-      url: mediaItem.url || "",
-      alt: mediaItem.alt || "",
-    })),
   };
 }
 
@@ -197,18 +145,13 @@ export default function VenueForm({
   onClearApiError,
   onClearSuccessMessage,
 }) {
-  const [formValues, setFormValues] = useState(EMPTY_FORM_VALUES);
-  const [mediaFields, setMediaFields] = useState(EMPTY_MEDIA);
+  const [formValues, setFormValues] = useState(
+    initialData?.formValues || EMPTY_FORM_VALUES
+  );
+  const [mediaFields, setMediaFields] = useState(
+    initialData?.mediaFields || EMPTY_MEDIA
+  );
   const [formErrors, setFormErrors] = useState({});
-
-  useEffect(() => {
-    if (!initialData) {
-      return;
-    }
-
-    setFormValues(initialData.formValues);
-    setMediaFields(initialData.mediaFields);
-  }, [initialData]);
 
   /**
    * Updates text and number fields.

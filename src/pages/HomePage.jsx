@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import VenueCard from "../components/VenueCard";
@@ -21,18 +21,13 @@ export default function HomePage() {
   const { venues, isLoadingVenues, venuesError, setVenuesError } =
     useVenues(12);
 
-  const [visibleVenues, setVisibleVenues] = useState([]);
   const [searchValue, setSearchValue] = useState("");
   const [guestValue, setGuestValue] = useState("");
 
-  useEffect(() => {
-    const matchingVenues = filterVenues(venues, {
-      search: searchValue,
-      guests: guestValue,
-    });
-
-    setVisibleVenues(matchingVenues.slice(0, 3));
-  }, [venues, searchValue, guestValue]);
+  const visibleVenues = filterVenues(venues, {
+    search: searchValue,
+    guests: guestValue,
+  }).slice(0, 3);
 
   function handleSearchSubmit(event) {
     event.preventDefault();

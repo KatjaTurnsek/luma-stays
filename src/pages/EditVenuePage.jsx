@@ -3,9 +3,8 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import Loader from "../components/Loader";
 import UiAlert from "../components/UiAlert";
-import VenueForm, {
-  mapVenueToFormValues,
-} from "../components/venues/VenueForm";
+import VenueForm from "../components/venues/VenueForm";
+import { mapVenueToFormValues } from "../utils/venue-form-utils";
 
 import { getVenueById, updateVenue } from "../api/venues-api";
 

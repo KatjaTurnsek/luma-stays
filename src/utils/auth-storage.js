@@ -1,11 +1,16 @@
 const AUTH_KEY = "lumaAuth";
 
+function notifyAuthChange() {
+  window.dispatchEvent(new Event("luma-auth-change"));
+}
+
 /**
  * Saves logged-in user data.
  * @param {object} authData - Login response data
  */
 export function saveAuth(authData) {
   localStorage.setItem(AUTH_KEY, JSON.stringify(authData));
+  notifyAuthChange();
 }
 
 /**
@@ -36,4 +41,5 @@ export function getToken() {
  */
 export function clearAuth() {
   localStorage.removeItem(AUTH_KEY);
+  notifyAuthChange();
 }

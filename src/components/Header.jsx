@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 
 import useAuth from "../hooks/useAuth";
@@ -16,8 +16,7 @@ import chevronDownIcon from "../assets/icons/chevron-down.svg";
 import "../styles/header.css";
 
 export default function Header() {
-  const { authData, isLoggedIn, isVenueManager, refreshAuth, logout } =
-    useAuth();
+  const { authData, isLoggedIn, isVenueManager, logout } = useAuth();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -30,12 +29,6 @@ export default function Header() {
 
   const userName = authData?.name || "UserName";
   const avatarUrl = authData?.avatar?.url;
-
-  useEffect(() => {
-    refreshAuth();
-    setIsMenuOpen(false);
-    setIsProfileOpen(false);
-  }, [location.pathname]);
 
   function handleLogout() {
     logout();
