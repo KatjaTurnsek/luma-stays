@@ -83,7 +83,7 @@ export default function VenueDetailsPage() {
         const response = await getVenueById(id);
         setVenue(response.data);
       } catch (error) {
-        setErrorMessage(error.message);
+        setErrorMessage(error.message || "Could not load venue.");
       } finally {
         setIsLoading(false);
       }

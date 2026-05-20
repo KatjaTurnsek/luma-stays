@@ -89,7 +89,11 @@ export default function VenueManagerProfileView({ auth }) {
   if (venuesError) {
     return (
       <section className="profile-page__section profile-page__role-section">
-        <UiAlert message={venuesError} type="error" />
+        <UiAlert
+          message={venuesError}
+          type="error"
+          onClose={() => setVenuesError("")}
+        />
       </section>
     );
   }
