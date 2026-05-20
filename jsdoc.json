@@ -1,0 +1,18 @@
+{
+  "source": {
+    "include": ["src/api", "src/hooks", "src/utils"],
+    "includePattern": ".+\\.js$",
+    "excludePattern": "(node_modules|dist|docs)"
+  },
+  "opts": {
+    "destination": "docs",
+    "recurse": true,
+    "readme": "README.md"
+  },
+  "plugins": ["plugins/markdown"],
+  "templates": {
+    "default": {
+      "outputSourceFiles": false
+    }
+  }
+}
