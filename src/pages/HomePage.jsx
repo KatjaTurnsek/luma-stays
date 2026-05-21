@@ -58,7 +58,13 @@ export default function HomePage() {
       <section className="home-hero">
         <picture>
           <source srcSet={heroMobile} media="(max-width: 767px)" />
-          <img src={heroDesktop} alt="Wooden cabin in nature" />
+          <img
+            src={heroDesktop}
+            alt="Wooden cabin in nature"
+            width="1920"
+            height="1080"
+            fetchPriority="high"
+          />
         </picture>
 
         <div className="home-hero__text">

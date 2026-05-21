@@ -26,6 +26,7 @@ export default function Footer() {
               className="ui-footer__logo"
               width="250"
               height="51"
+              loading="lazy"
             />
           </Link>
           <p>Stay somewhere worth remembering.</p>
@@ -92,6 +93,7 @@ export default function Footer() {
           className="ui-footer__illustration"
           width="460"
           height="180"
+          loading="lazy"
         />
       </div>
 

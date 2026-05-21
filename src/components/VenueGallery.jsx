@@ -8,8 +8,8 @@ import "../styles/venue-gallery.css";
 
 /**
  * Gets image URL from a venue media item.
- * @param {object} mediaItem - API media item
- * @returns {string} Image URL
+ * @param {object} mediaItem - API media item.
+ * @returns {string} Image URL.
  */
 function getMediaUrl(mediaItem) {
   return mediaItem?.url || placeholderImage;
@@ -42,13 +42,22 @@ export default function VenueGallery({ images = [], title }) {
           onClick={showPreviousImage}
           aria-label="Show previous image"
         >
-          <img src={chevronLeftIcon} alt="" aria-hidden="true" />
+          <img
+            src={chevronLeftIcon}
+            alt=""
+            aria-hidden="true"
+            width="24"
+            height="24"
+          />
         </button>
 
         <img
           src={getMediaUrl(activeImage)}
           alt={activeImage?.alt || title}
           className="venue-gallery__main-image"
+          width="1200"
+          height="800"
+          fetchPriority="high"
         />
 
         <button
@@ -57,7 +66,13 @@ export default function VenueGallery({ images = [], title }) {
           onClick={showNextImage}
           aria-label="Show next image"
         >
-          <img src={chevronRightIcon} alt="" aria-hidden="true" />
+          <img
+            src={chevronRightIcon}
+            alt=""
+            aria-hidden="true"
+            width="24"
+            height="24"
+          />
         </button>
       </section>
 
@@ -74,7 +89,14 @@ export default function VenueGallery({ images = [], title }) {
             key={`${image.url}-${index}`}
             aria-label={`Show image ${index + 1}`}
           >
-            <img src={getMediaUrl(image)} alt="" aria-hidden="true" />
+            <img
+              src={getMediaUrl(image)}
+              alt=""
+              aria-hidden="true"
+              width="240"
+              height="160"
+              loading="lazy"
+            />
           </button>
         ))}
       </div>

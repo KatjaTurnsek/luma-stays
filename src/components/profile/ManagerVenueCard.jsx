@@ -56,6 +56,9 @@ export default function ManagerVenueCard({ venue, isDeleting, onDeleteVenue }) {
         <img
           src={getVenueImage(venue)}
           alt={venue.media?.[0]?.alt || venue.name}
+          width="600"
+          height="400"
+          loading="lazy"
         />
       </Link>
 
@@ -65,7 +68,13 @@ export default function ManagerVenueCard({ venue, isDeleting, onDeleteVenue }) {
         </h3>
 
         <div className="profile-page__manager-location">
-          <img src={locationIcon} alt="" aria-hidden="true" />
+          <img
+            src={locationIcon}
+            alt=""
+            aria-hidden="true"
+            width="24"
+            height="24"
+          />
           <span>{getLocationText(venue.location)}</span>
         </div>
       </div>

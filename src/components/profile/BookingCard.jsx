@@ -55,6 +55,16 @@ export default function BookingCard({
     onCancelBooking?.(booking.id);
   }
 
+  const imageElement = (
+    <img
+      src={getVenueImage(venue)}
+      alt={imageAlt}
+      width="600"
+      height="400"
+      loading="lazy"
+    />
+  );
+
   return (
     <article className="profile-page__booking-card">
       {venueId ? (
@@ -62,12 +72,10 @@ export default function BookingCard({
           to={`/venues/${venueId}`}
           className="profile-page__booking-card-image"
         >
-          <img src={getVenueImage(venue)} alt={imageAlt} />
+          {imageElement}
         </Link>
       ) : (
-        <div className="profile-page__booking-card-image">
-          <img src={getVenueImage(venue)} alt={imageAlt} />
-        </div>
+        <div className="profile-page__booking-card-image">{imageElement}</div>
       )}
 
       <div className="profile-page__booking-card-content">

@@ -20,10 +20,22 @@ export default function VenueCard({ venue }) {
   return (
     <article className="venue-card">
       <div className="venue-card__image-wrap">
-        <img src={venue.image} alt={venue.title} />
+        <img
+          src={venue.image}
+          alt={venue.title}
+          width="600"
+          height="400"
+          loading="lazy"
+        />
 
         <div className="venue-card__location">
-          <img src={locationIcon} alt="" aria-hidden="true" />
+          <img
+            src={locationIcon}
+            alt=""
+            aria-hidden="true"
+            width="24"
+            height="24"
+          />
           <span>{venue.location}</span>
         </div>
       </div>
@@ -37,7 +49,13 @@ export default function VenueCard({ venue }) {
         </div>
 
         <div className="venue-card__rating">
-          <img src={starIcon} alt="" aria-hidden="true" />
+          <img
+            src={starIcon}
+            alt=""
+            aria-hidden="true"
+            width="24"
+            height="24"
+          />
           <span>{venue.rating}</span>
         </div>
       </div>
@@ -51,7 +69,16 @@ export default function VenueCard({ venue }) {
               return null;
             }
 
-            return <img src={icon} alt="" aria-hidden="true" key={amenity} />;
+            return (
+              <img
+                src={icon}
+                alt=""
+                aria-hidden="true"
+                width="24"
+                height="24"
+                key={amenity}
+              />
+            );
           })}
         </div>
 

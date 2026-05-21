@@ -114,10 +114,19 @@ export default function ProfileSummary({ auth, onAuthUpdate }) {
               src={avatarUrl}
               alt={`${auth.name} avatar`}
               className="profile-page__avatar"
+              width="160"
+              height="160"
+              loading="lazy"
             />
           ) : (
             <div className="profile-page__avatar profile-page__avatar--fallback">
-              <img src={userIcon} alt="" aria-hidden="true" />
+              <img
+                src={userIcon}
+                alt=""
+                aria-hidden="true"
+                width="64"
+                height="64"
+              />
             </div>
           )}
         </div>
