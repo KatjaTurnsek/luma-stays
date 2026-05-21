@@ -19,7 +19,7 @@ export default function HomePage() {
   const navigate = useNavigate();
 
   const { venues, isLoadingVenues, venuesError, setVenuesError } =
-    useVenues(12);
+    useVenues(100);
 
   const [searchValue, setSearchValue] = useState("");
   const [guestValue, setGuestValue] = useState("");
