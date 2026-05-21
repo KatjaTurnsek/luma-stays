@@ -1,7 +1,7 @@
 import checkCircleIcon from "../assets/icons/check-circle.svg";
 import closeIcon from "../assets/icons/add.svg";
 import alertTriangleIcon from "../assets/icons/alert-triangle.svg";
-import infoIcon from "../assets/icons/info.svg";
+import infoIcon from "../assets/icons/Info.svg";
 
 const ALERT_CONTENT = {
   success: {
