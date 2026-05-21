@@ -1,6 +1,5 @@
-import { Link, useNavigate } from "react-router-dom";
-
-import useAuth from "../hooks/useAuth";
+import { Link } from "react-router-dom";
+import { getAuth, clearAuth } from "../utils/auth-storage";
 
 import logoDark from "../assets/logos/logo-dark.svg";
 import footerIllustration from "../assets/images/footer-illustration.svg";
@@ -8,13 +7,12 @@ import footerIllustration from "../assets/images/footer-illustration.svg";
 import "../styles/footer.css";
 
 export default function Footer() {
-  const { isLoggedIn, isVenueManager, logout } = useAuth();
-
-  const navigate = useNavigate();
+  const auth = getAuth();
+  const isLoggedIn = Boolean(auth?.accessToken);
+  const isVenueManager = Boolean(auth?.venueManager);
 
   function handleLogout() {
-    logout();
-    navigate("/");
+    clearAuth();
   }
 
   return (
@@ -22,9 +20,14 @@ export default function Footer() {
       <div className="ui-footer__top">
         <div className="ui-footer__brand">
           <Link to="/" aria-label="Luma Stays home">
-            <img src={logoDark} alt="Luma Stays" className="ui-footer__logo" />
+            <img
+              src={logoDark}
+              alt="Luma Stays"
+              className="ui-footer__logo"
+              width="250"
+              height="51"
+            />
           </Link>
-
           <p>Stay somewhere worth remembering.</p>
         </div>
 
@@ -87,6 +90,8 @@ export default function Footer() {
           alt=""
           aria-hidden="true"
           className="ui-footer__illustration"
+          width="460"
+          height="180"
         />
       </div>
 

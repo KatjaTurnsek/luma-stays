@@ -55,7 +55,13 @@ export default function Header() {
           className="ui-header__logo-link"
           aria-label="Luma Stays home"
         >
-          <img src={logoDark} className="ui-header__logo" alt="Luma Stays" />
+          <img
+            src={logoDark}
+            className="ui-header__logo"
+            alt="Luma Stays"
+            width="250"
+            height="51"
+          />
         </Link>
 
         <nav className="ui-header__desktop-nav" aria-label="Main navigation">
