@@ -61,8 +61,8 @@ export default function HomePage() {
           <img
             src={heroDesktop}
             alt="Wooden cabin in nature"
-            width="1920"
-            height="1080"
+            width="1600"
+            height="900"
             fetchPriority="high"
           />
         </picture>
@@ -88,12 +88,19 @@ export default function HomePage() {
             <span className="visually-hidden">Location or stay name</span>
             <input
               type="search"
+              name="search"
               placeholder="Location or stay name"
               value={searchValue}
               onChange={handleSearchValueChange}
             />
             <span>
-              <img src={locationIcon} alt="" aria-hidden="true" />
+              <img
+                src={locationIcon}
+                alt=""
+                aria-hidden="true"
+                width="24"
+                height="24"
+              />
             </span>
           </label>
 
@@ -101,13 +108,20 @@ export default function HomePage() {
             <span className="visually-hidden">Guests</span>
             <input
               type="number"
+              name="guests"
               min="1"
               placeholder="Guests"
               value={guestValue}
               onChange={handleGuestValueChange}
             />
             <span>
-              <img src={guestsIcon} alt="" aria-hidden="true" />
+              <img
+                src={guestsIcon}
+                alt=""
+                aria-hidden="true"
+                width="24"
+                height="24"
+              />
             </span>
           </label>
 
