@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
+import PageMeta from "../components/PageMeta";
 import UiAlert from "../components/UiAlert";
 import { registerUser } from "../api/auth-api";
 
@@ -146,138 +147,145 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="auth-page">
-      <div className="container auth-page__container">
-        <section className="auth-card" aria-labelledby="register-title">
-          <div className="auth-card__header">
-            <h1 id="register-title">Create an account</h1>
-            <p>Register for Luma Stays and choose your account type.</p>
-          </div>
+    <>
+      <PageMeta
+        title="Register | Luma Stays"
+        description="Create a Luma Stays account as a customer or venue manager to book stays or manage accommodation listings."
+      />
 
-          {(apiError || successMessage) && (
-            <div className="auth-card__alerts">
-              {apiError && (
-                <UiAlert
-                  message={apiError}
-                  type="error"
-                  onClose={() => setApiError("")}
-                />
-              )}
-
-              {successMessage && (
-                <UiAlert
-                  message={successMessage}
-                  type="success"
-                  onClose={() => setSuccessMessage("")}
-                />
-              )}
-            </div>
-          )}
-
-          <form className="auth-form" onSubmit={handleSubmit} noValidate>
-            <div className="auth-form__group">
-              <label htmlFor="register-name">Username</label>
-              <input
-                id="register-name"
-                name="name"
-                type="text"
-                value={formValues.name}
-                onChange={handleChange}
-                autoComplete="username"
-                aria-invalid={Boolean(formErrors.name)}
-              />
-              <FieldHelper
-                error={formErrors.name}
-                helperText="No spaces. Use letters, numbers, and underscore only."
-              />
+      <div className="auth-page">
+        <div className="container auth-page__container">
+          <section className="auth-card" aria-labelledby="register-title">
+            <div className="auth-card__header">
+              <h1 id="register-title">Create an account</h1>
+              <p>Register for Luma Stays and choose your account type.</p>
             </div>
 
-            <div className="auth-form__group">
-              <label htmlFor="register-email">Email</label>
-              <input
-                id="register-email"
-                name="email"
-                type="email"
-                value={formValues.email}
-                onChange={handleChange}
-                autoComplete="email"
-                aria-invalid={Boolean(formErrors.email)}
-              />
-              <FieldHelper
-                error={formErrors.email}
-                helperText="yourname@stud.noroff.no"
-              />
-            </div>
+            {(apiError || successMessage) && (
+              <div className="auth-card__alerts">
+                {apiError && (
+                  <UiAlert
+                    message={apiError}
+                    type="error"
+                    onClose={() => setApiError("")}
+                  />
+                )}
 
-            <div className="auth-form__group">
-              <label htmlFor="register-password">Password</label>
-              <input
-                id="register-password"
-                name="password"
-                type="password"
-                value={formValues.password}
-                onChange={handleChange}
-                autoComplete="new-password"
-                aria-invalid={Boolean(formErrors.password)}
-              />
-              <FieldHelper
-                error={formErrors.password}
-                helperText="At least 8 characters"
-              />
-            </div>
+                {successMessage && (
+                  <UiAlert
+                    message={successMessage}
+                    type="success"
+                    onClose={() => setSuccessMessage("")}
+                  />
+                )}
+              </div>
+            )}
 
-            <fieldset className="auth-form__fieldset">
-              <legend>Account type:</legend>
-
-              <label className="auth-form__radio">
+            <form className="auth-form" onSubmit={handleSubmit} noValidate>
+              <div className="auth-form__group">
+                <label htmlFor="register-name">Username</label>
                 <input
-                  type="radio"
-                  name="accountType"
-                  value="customer"
-                  checked={formValues.accountType === "customer"}
+                  id="register-name"
+                  name="name"
+                  type="text"
+                  value={formValues.name}
                   onChange={handleChange}
+                  autoComplete="username"
+                  aria-invalid={Boolean(formErrors.name)}
                 />
-                <span>
-                  <strong>Customer</strong>
-                  <small>Browse venues and create bookings.</small>
-                </span>
-              </label>
+                <FieldHelper
+                  error={formErrors.name}
+                  helperText="No spaces. Use letters, numbers, and underscore only."
+                />
+              </div>
 
-              <label className="auth-form__radio">
+              <div className="auth-form__group">
+                <label htmlFor="register-email">Email</label>
                 <input
-                  type="radio"
-                  name="accountType"
-                  value="venueManager"
-                  checked={formValues.accountType === "venueManager"}
+                  id="register-email"
+                  name="email"
+                  type="email"
+                  value={formValues.email}
                   onChange={handleChange}
+                  autoComplete="email"
+                  aria-invalid={Boolean(formErrors.email)}
                 />
-                <span>
-                  <strong>Venue manager</strong>
-                  <small>Create venues and manage bookings.</small>
-                </span>
-              </label>
+                <FieldHelper
+                  error={formErrors.email}
+                  helperText="yourname@stud.noroff.no"
+                />
+              </div>
 
-              {formErrors.accountType && (
-                <p className="auth-form__helper auth-form__helper--error">
-                  {formErrors.accountType}
-                </p>
-              )}
-            </fieldset>
+              <div className="auth-form__group">
+                <label htmlFor="register-password">Password</label>
+                <input
+                  id="register-password"
+                  name="password"
+                  type="password"
+                  value={formValues.password}
+                  onChange={handleChange}
+                  autoComplete="new-password"
+                  aria-invalid={Boolean(formErrors.password)}
+                />
+                <FieldHelper
+                  error={formErrors.password}
+                  helperText="At least 8 characters"
+                />
+              </div>
 
-            <button
-              type="submit"
-              className="ui-btn-primary auth-form__submit"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Creating account..." : "Create account"}
-            </button>
-          </form>
+              <fieldset className="auth-form__fieldset">
+                <legend>Account type:</legend>
 
-          <p className="auth-card__footer-text">
-            Already have an account? <Link to="/login">Log in</Link>
-          </p>
-        </section>
+                <label className="auth-form__radio">
+                  <input
+                    type="radio"
+                    name="accountType"
+                    value="customer"
+                    checked={formValues.accountType === "customer"}
+                    onChange={handleChange}
+                  />
+                  <span>
+                    <strong>Customer</strong>
+                    <small>Browse venues and create bookings.</small>
+                  </span>
+                </label>
+
+                <label className="auth-form__radio">
+                  <input
+                    type="radio"
+                    name="accountType"
+                    value="venueManager"
+                    checked={formValues.accountType === "venueManager"}
+                    onChange={handleChange}
+                  />
+                  <span>
+                    <strong>Venue manager</strong>
+                    <small>Create venues and manage bookings.</small>
+                  </span>
+                </label>
+
+                {formErrors.accountType && (
+                  <p className="auth-form__helper auth-form__helper--error">
+                    {formErrors.accountType}
+                  </p>
+                )}
+              </fieldset>
+
+              <button
+                type="submit"
+                className="ui-btn-primary auth-form__submit"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Creating account..." : "Create account"}
+              </button>
+            </form>
+
+            <p className="auth-card__footer-text">
+              Already have an account? <Link to="/login">Log in</Link>
+            </p>
+          </section>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

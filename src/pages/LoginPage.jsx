@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
+import PageMeta from "../components/PageMeta";
 import UiAlert from "../components/UiAlert";
 import { loginUser } from "../api/auth-api";
 import { saveAuth } from "../utils/auth-storage";
@@ -128,83 +129,90 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="auth-page">
-      <div className="container auth-page__container">
-        <section className="auth-card" aria-labelledby="login-title">
-          <div className="auth-card__header">
-            <h1 id="login-title">Log in</h1>
-            <p>Log in to manage bookings and continue with Luma Stays.</p>
-          </div>
+    <>
+      <PageMeta
+        title="Login | Luma Stays"
+        description="Log in to Luma Stays to manage bookings, update your profile, or manage venues as a venue manager."
+      />
 
-          {(apiError || successMessage) && (
-            <div className="auth-card__alerts">
-              {apiError && (
-                <UiAlert
-                  message={apiError}
-                  type="error"
-                  onClose={() => setApiError("")}
+      <div className="auth-page">
+        <div className="container auth-page__container">
+          <section className="auth-card" aria-labelledby="login-title">
+            <div className="auth-card__header">
+              <h1 id="login-title">Log in</h1>
+              <p>Log in to manage bookings and continue with Luma Stays.</p>
+            </div>
+
+            {(apiError || successMessage) && (
+              <div className="auth-card__alerts">
+                {apiError && (
+                  <UiAlert
+                    message={apiError}
+                    type="error"
+                    onClose={() => setApiError("")}
+                  />
+                )}
+
+                {successMessage && (
+                  <UiAlert
+                    message={successMessage}
+                    type="success"
+                    onClose={() => setSuccessMessage("")}
+                  />
+                )}
+              </div>
+            )}
+
+            <form className="auth-form" onSubmit={handleSubmit} noValidate>
+              <div className="auth-form__group">
+                <label htmlFor="login-email">Email</label>
+                <input
+                  id="login-email"
+                  name="email"
+                  type="email"
+                  value={formValues.email}
+                  onChange={handleChange}
+                  autoComplete="email"
+                  aria-invalid={Boolean(formErrors.email)}
                 />
-              )}
-
-              {successMessage && (
-                <UiAlert
-                  message={successMessage}
-                  type="success"
-                  onClose={() => setSuccessMessage("")}
+                <FieldHelper
+                  error={formErrors.email}
+                  helperText="Use your registered stud.noroff.no email."
                 />
-              )}
-            </div>
-          )}
+              </div>
 
-          <form className="auth-form" onSubmit={handleSubmit} noValidate>
-            <div className="auth-form__group">
-              <label htmlFor="login-email">Email</label>
-              <input
-                id="login-email"
-                name="email"
-                type="email"
-                value={formValues.email}
-                onChange={handleChange}
-                autoComplete="email"
-                aria-invalid={Boolean(formErrors.email)}
-              />
-              <FieldHelper
-                error={formErrors.email}
-                helperText="Use your registered stud.noroff.no email."
-              />
-            </div>
+              <div className="auth-form__group">
+                <label htmlFor="login-password">Password</label>
+                <input
+                  id="login-password"
+                  name="password"
+                  type="password"
+                  value={formValues.password}
+                  onChange={handleChange}
+                  autoComplete="current-password"
+                  aria-invalid={Boolean(formErrors.password)}
+                />
+                <FieldHelper
+                  error={formErrors.password}
+                  helperText="Enter your account password."
+                />
+              </div>
 
-            <div className="auth-form__group">
-              <label htmlFor="login-password">Password</label>
-              <input
-                id="login-password"
-                name="password"
-                type="password"
-                value={formValues.password}
-                onChange={handleChange}
-                autoComplete="current-password"
-                aria-invalid={Boolean(formErrors.password)}
-              />
-              <FieldHelper
-                error={formErrors.password}
-                helperText="Enter your account password."
-              />
-            </div>
+              <button
+                type="submit"
+                className="ui-btn-primary auth-form__submit"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Logging in..." : "Log in"}
+              </button>
+            </form>
 
-            <button
-              type="submit"
-              className="ui-btn-primary auth-form__submit"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Logging in..." : "Log in"}
-            </button>
-          </form>
-
-          <p className="auth-card__footer-text">
-            No account yet? <Link to="/register">Register</Link>
-          </p>
-        </section>
+            <p className="auth-card__footer-text">
+              No account yet? <Link to="/register">Register</Link>
+            </p>
+          </section>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

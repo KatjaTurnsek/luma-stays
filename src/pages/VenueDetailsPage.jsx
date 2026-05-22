@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
+import PageMeta from "../components/PageMeta";
 import Loader from "../components/Loader";
 import UiAlert from "../components/UiAlert";
 import VenueGallery from "../components/VenueGallery";
@@ -106,102 +107,112 @@ export default function VenueDetailsPage() {
   const owner = venue.owner;
 
   return (
-    <div className="venue-details">
-      <div className="container">
-        <VenueGallery images={venue.media} title={venue.name} />
+    <>
+      <PageMeta
+        title="Venue Details | Luma Stays"
+        description="Explore available venues, search by location or stay name, filter by guests, and sort stays by price, rating, or newest listings."
+      />
+      <div className="venue-details">
+        <div className="container">
+          <VenueGallery images={venue.media} title={venue.name} />
 
-        <div className="venue-details__layout">
-          <main className="venue-details__content">
-            <section className="venue-details__intro">
-              <div>
-                <h1>{venue.name}</h1>
-
-                <div className="venue-details__location">
-                  <img src={locationIcon} alt="" aria-hidden="true" />
-                  <span>{locationText}</span>
-                </div>
-              </div>
-
-              <div className="venue-details__rating">
-                <img src={starIcon} alt="" aria-hidden="true" />
-                <span>{venue.rating || 0}</span>
-              </div>
-            </section>
-
-            <section className="venue-details__section">
-              <p>{venue.description || "No description has been added yet."}</p>
-            </section>
-
-            <section className="venue-details__section">
-              <div className="venue-details__facts">
-                <div className="venue-details__fact">
-                  <img src={usersIcon} alt="" aria-hidden="true" />
-                  <span>Guests: {venue.maxGuests}</span>
-                </div>
-
-                <div className="venue-details__fact">
-                  <span>Price: {venue.price} EUR / night</span>
-                </div>
-              </div>
-            </section>
-
-            <section className="venue-details__section">
-              <h2>Facilities:</h2>
-
-              {features.length > 0 ? (
-                <>
-                  <ul className="venue-details__features-list">
-                    {features.map((feature) => (
-                      <li key={feature.label}>{feature.label}</li>
-                    ))}
-                  </ul>
-
-                  <div className="venue-details__feature-icons">
-                    {features.map((feature) => (
-                      <img
-                        src={feature.icon}
-                        alt=""
-                        aria-hidden="true"
-                        key={feature.label}
-                      />
-                    ))}
-                  </div>
-                </>
-              ) : (
-                <p>No facilities have been added yet.</p>
-              )}
-            </section>
-
-            <section className="venue-details__section venue-details__host-section">
-              <h2>Hosted by:</h2>
-
-              <div className="venue-details__host">
-                <img
-                  src={owner?.avatar?.url || userIcon}
-                  alt={
-                    owner?.name ? `${owner.name} avatar` : "Default user avatar"
-                  }
-                />
-
+          <div className="venue-details__layout">
+            <main className="venue-details__content">
+              <section className="venue-details__intro">
                 <div>
-                  <h3>{owner?.name || "Host not added"}</h3>
-                  {owner?.email && <p>{owner.email}</p>}
-                </div>
-              </div>
-            </section>
-          </main>
+                  <h1>{venue.name}</h1>
 
-          <VenueBookingCard
-            venue={venue}
-            onBookingCreated={(booking) =>
-              setVenue((currentVenue) => ({
-                ...currentVenue,
-                bookings: [...(currentVenue.bookings || []), booking],
-              }))
-            }
-          />
+                  <div className="venue-details__location">
+                    <img src={locationIcon} alt="" aria-hidden="true" />
+                    <span>{locationText}</span>
+                  </div>
+                </div>
+
+                <div className="venue-details__rating">
+                  <img src={starIcon} alt="" aria-hidden="true" />
+                  <span>{venue.rating || 0}</span>
+                </div>
+              </section>
+
+              <section className="venue-details__section">
+                <p>
+                  {venue.description || "No description has been added yet."}
+                </p>
+              </section>
+
+              <section className="venue-details__section">
+                <div className="venue-details__facts">
+                  <div className="venue-details__fact">
+                    <img src={usersIcon} alt="" aria-hidden="true" />
+                    <span>Guests: {venue.maxGuests}</span>
+                  </div>
+
+                  <div className="venue-details__fact">
+                    <span>Price: {venue.price} EUR / night</span>
+                  </div>
+                </div>
+              </section>
+
+              <section className="venue-details__section">
+                <h2>Facilities:</h2>
+
+                {features.length > 0 ? (
+                  <>
+                    <ul className="venue-details__features-list">
+                      {features.map((feature) => (
+                        <li key={feature.label}>{feature.label}</li>
+                      ))}
+                    </ul>
+
+                    <div className="venue-details__feature-icons">
+                      {features.map((feature) => (
+                        <img
+                          src={feature.icon}
+                          alt=""
+                          aria-hidden="true"
+                          key={feature.label}
+                        />
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <p>No facilities have been added yet.</p>
+                )}
+              </section>
+
+              <section className="venue-details__section venue-details__host-section">
+                <h2>Hosted by:</h2>
+
+                <div className="venue-details__host">
+                  <img
+                    src={owner?.avatar?.url || userIcon}
+                    alt={
+                      owner?.name
+                        ? `${owner.name} avatar`
+                        : "Default user avatar"
+                    }
+                  />
+
+                  <div>
+                    <h3>{owner?.name || "Host not added"}</h3>
+                    {owner?.email && <p>{owner.email}</p>}
+                  </div>
+                </div>
+              </section>
+            </main>
+
+            <VenueBookingCard
+              venue={venue}
+              onBookingCreated={(booking) =>
+                setVenue((currentVenue) => ({
+                  ...currentVenue,
+                  bookings: [...(currentVenue.bookings || []), booking],
+                }))
+              }
+            />
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
+import PageMeta from "../components/PageMeta";
 import Loader from "../components/Loader";
 import UiAlert from "../components/UiAlert";
 import VenueCard from "../components/VenueCard";
@@ -106,160 +107,167 @@ export default function VenuesPage() {
   }
 
   return (
-    <div className="venues-page">
-      <section className="venues-page__intro">
-        <div className="container">
-          <h1>Explore stays</h1>
-          <p>Find the perfect place for your next trip.</p>
-        </div>
-      </section>
+    <>
+      <PageMeta
+        title="Explore Stays | Luma Stays"
+        description="Explore available venues, search by location or stay name, filter by guests, and sort stays by price, rating, or newest listings."
+      />
 
-      <section className="venues-page__content">
-        <div className="container">
-          <div className="venues-page__search" aria-label="Filter stays">
-            <label className="venues-page__search-field">
-              <span className="visually-hidden">Location or stay name</span>
-              <input
-                type="search"
-                name="search"
-                value={searchValue}
-                onChange={handleSearchChange}
-                placeholder="Location"
-              />
-              <span className="venues-page__search-icon">
-                <img
-                  src={locationIcon}
-                  alt=""
-                  aria-hidden="true"
-                  width="24"
-                  height="24"
-                />
-              </span>
-            </label>
-
-            <label className="venues-page__search-field">
-              <span className="visually-hidden">Guests</span>
-              <input
-                type="number"
-                name="guests"
-                min="1"
-                value={guestValue}
-                onChange={handleGuestsChange}
-                placeholder="Guests"
-              />
-              <span className="venues-page__search-icon">
-                <img
-                  src={guestsIcon}
-                  alt=""
-                  aria-hidden="true"
-                  width="24"
-                  height="24"
-                />
-              </span>
-            </label>
+      <div className="venues-page">
+        <section className="venues-page__intro">
+          <div className="container">
+            <h1>Explore stays</h1>
+            <p>Find the perfect place for your next trip.</p>
           </div>
+        </section>
 
-          {isLoadingVenues && <Loader text="Loading stays..." />}
-
-          {!isLoadingVenues && venuesError && (
-            <UiAlert
-              message={venuesError}
-              type="error"
-              onClose={() => setVenuesError("")}
-            />
-          )}
-
-          {!isLoadingVenues && !venuesError && venues.length === 0 && (
-            <UiAlert
-              message="No stays are available right now. Please check again later."
-              type="info"
-            />
-          )}
-
-          {!isLoadingVenues && !venuesError && venues.length > 0 && (
-            <>
-              <div className="venues-page__header">
-                <h2>
-                  {sortedVenues.length}{" "}
-                  {sortedVenues.length === 1 ? "stay" : "stays"} found
-                </h2>
-
-                <div className="venues-page__sort">
-                  <button
-                    type="button"
-                    className="venues-page__sort-button"
-                    onClick={toggleSortMenu}
-                    aria-expanded={isSortOpen}
-                    aria-controls="venues-sort-menu"
-                  >
-                    <span>{selectedSort.label}</span>
-                    <span className="venues-page__sort-icon">
-                      <img
-                        src={chevronDownIcon}
-                        alt=""
-                        aria-hidden="true"
-                        width="24"
-                        height="24"
-                      />
-                    </span>
-                  </button>
-
-                  {isSortOpen && (
-                    <ul
-                      id="venues-sort-menu"
-                      className="venues-page__sort-menu"
-                    >
-                      {SORT_OPTIONS.map((option) => (
-                        <li key={option.value}>
-                          <button
-                            type="button"
-                            onClick={() => handleSortChange(option.value)}
-                            aria-current={
-                              option.value === sortValue ? "true" : undefined
-                            }
-                          >
-                            {option.label}
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              </div>
-
-              {sortedVenues.length === 0 ? (
-                isNoResultsAlertVisible && (
-                  <UiAlert
-                    message="No stays match your search. Try another location or guest count."
-                    type="info"
-                    onClose={() => setIsNoResultsAlertVisible(false)}
+        <section className="venues-page__content">
+          <div className="container">
+            <div className="venues-page__search" aria-label="Filter stays">
+              <label className="venues-page__search-field">
+                <span className="visually-hidden">Location or stay name</span>
+                <input
+                  type="search"
+                  name="search"
+                  value={searchValue}
+                  onChange={handleSearchChange}
+                  placeholder="Location"
+                />
+                <span className="venues-page__search-icon">
+                  <img
+                    src={locationIcon}
+                    alt=""
+                    aria-hidden="true"
+                    width="24"
+                    height="24"
                   />
-                )
-              ) : (
-                <>
-                  <div className="venues-page__grid">
-                    {visibleVenues.map((venue) => (
-                      <VenueCard venue={venue} key={venue.id} />
-                    ))}
-                  </div>
+                </span>
+              </label>
 
-                  {hasMoreVenues && (
-                    <div className="venues-page__cta">
-                      <button
-                        type="button"
-                        className="ui-btn-secondary"
-                        onClick={handleLoadMore}
+              <label className="venues-page__search-field">
+                <span className="visually-hidden">Guests</span>
+                <input
+                  type="number"
+                  name="guests"
+                  min="1"
+                  value={guestValue}
+                  onChange={handleGuestsChange}
+                  placeholder="Guests"
+                />
+                <span className="venues-page__search-icon">
+                  <img
+                    src={guestsIcon}
+                    alt=""
+                    aria-hidden="true"
+                    width="24"
+                    height="24"
+                  />
+                </span>
+              </label>
+            </div>
+
+            {isLoadingVenues && <Loader text="Loading stays..." />}
+
+            {!isLoadingVenues && venuesError && (
+              <UiAlert
+                message={venuesError}
+                type="error"
+                onClose={() => setVenuesError("")}
+              />
+            )}
+
+            {!isLoadingVenues && !venuesError && venues.length === 0 && (
+              <UiAlert
+                message="No stays are available right now. Please check again later."
+                type="info"
+              />
+            )}
+
+            {!isLoadingVenues && !venuesError && venues.length > 0 && (
+              <>
+                <div className="venues-page__header">
+                  <h2>
+                    {sortedVenues.length}{" "}
+                    {sortedVenues.length === 1 ? "stay" : "stays"} found
+                  </h2>
+
+                  <div className="venues-page__sort">
+                    <button
+                      type="button"
+                      className="venues-page__sort-button"
+                      onClick={toggleSortMenu}
+                      aria-expanded={isSortOpen}
+                      aria-controls="venues-sort-menu"
+                    >
+                      <span>{selectedSort.label}</span>
+                      <span className="venues-page__sort-icon">
+                        <img
+                          src={chevronDownIcon}
+                          alt=""
+                          aria-hidden="true"
+                          width="24"
+                          height="24"
+                        />
+                      </span>
+                    </button>
+
+                    {isSortOpen && (
+                      <ul
+                        id="venues-sort-menu"
+                        className="venues-page__sort-menu"
                       >
-                        Load more stays
-                      </button>
+                        {SORT_OPTIONS.map((option) => (
+                          <li key={option.value}>
+                            <button
+                              type="button"
+                              onClick={() => handleSortChange(option.value)}
+                              aria-current={
+                                option.value === sortValue ? "true" : undefined
+                              }
+                            >
+                              {option.label}
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </div>
+
+                {sortedVenues.length === 0 ? (
+                  isNoResultsAlertVisible && (
+                    <UiAlert
+                      message="No stays match your search. Try another location or guest count."
+                      type="info"
+                      onClose={() => setIsNoResultsAlertVisible(false)}
+                    />
+                  )
+                ) : (
+                  <>
+                    <div className="venues-page__grid">
+                      {visibleVenues.map((venue) => (
+                        <VenueCard venue={venue} key={venue.id} />
+                      ))}
                     </div>
-                  )}
-                </>
-              )}
-            </>
-          )}
-        </div>
-      </section>
-    </div>
+
+                    {hasMoreVenues && (
+                      <div className="venues-page__cta">
+                        <button
+                          type="button"
+                          className="ui-btn-secondary"
+                          onClick={handleLoadMore}
+                        >
+                          Load more stays
+                        </button>
+                      </div>
+                    )}
+                  </>
+                )}
+              </>
+            )}
+          </div>
+        </section>
+      </div>
+    </>
   );
 }

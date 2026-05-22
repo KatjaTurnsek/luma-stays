@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
+import PageMeta from "../components/PageMeta";
 import Loader from "../components/Loader";
 import UiAlert from "../components/UiAlert";
 import VenueForm from "../components/venues/VenueForm";
@@ -75,39 +76,49 @@ export default function EditVenuePage() {
   }
 
   return (
-    <div className="venue-form-page">
-      <section className="venue-form-page__hero" aria-label="Edit venue intro">
-        <div className="venue-form-page__hero-overlay">
-          <h1>Manage your venues</h1>
+    <>
+      <PageMeta
+        title="Edit Venue | Luma Stays"
+        description="Edit an existing Luma Stays venue listing, including images, description, price, guest capacity, facilities, location, and rating."
+      />
+
+      <div className="venue-form-page">
+        <section
+          className="venue-form-page__hero"
+          aria-label="Edit venue intro"
+        >
+          <div className="venue-form-page__hero-overlay">
+            <h1>Manage your venues</h1>
+          </div>
+        </section>
+
+        <div className="container venue-form-page__container">
+          {isLoading && <Loader />}
+
+          {!isLoading && loadError && (
+            <UiAlert
+              message={loadError}
+              type="error"
+              onClose={() => setLoadError("")}
+            />
+          )}
+
+          {!isLoading && !loadError && initialData && (
+            <VenueForm
+              title="Edit venue"
+              submitLabel="Save changes"
+              submittingLabel="Saving changes..."
+              initialData={initialData}
+              apiError={apiError}
+              successMessage={successMessage}
+              isSubmitting={isSubmitting}
+              onSubmit={handleSubmit}
+              onClearApiError={() => setApiError("")}
+              onClearSuccessMessage={() => setSuccessMessage("")}
+            />
+          )}
         </div>
-      </section>
-
-      <div className="container venue-form-page__container">
-        {isLoading && <Loader />}
-
-        {!isLoading && loadError && (
-          <UiAlert
-            message={loadError}
-            type="error"
-            onClose={() => setLoadError("")}
-          />
-        )}
-
-        {!isLoading && !loadError && initialData && (
-          <VenueForm
-            title="Edit venue"
-            submitLabel="Save changes"
-            submittingLabel="Saving changes..."
-            initialData={initialData}
-            apiError={apiError}
-            successMessage={successMessage}
-            isSubmitting={isSubmitting}
-            onSubmit={handleSubmit}
-            onClearApiError={() => setApiError("")}
-            onClearSuccessMessage={() => setSuccessMessage("")}
-          />
-        )}
       </div>
-    </div>
+    </>
   );
 }

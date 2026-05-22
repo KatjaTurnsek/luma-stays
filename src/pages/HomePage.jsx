@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
+import PageMeta from "../components/PageMeta";
 import VenueCard from "../components/VenueCard";
 import Loader from "../components/Loader";
 import UiAlert from "../components/UiAlert";
@@ -55,6 +56,11 @@ export default function HomePage() {
 
   return (
     <>
+      <PageMeta
+        title="Luma Stays | Accommodation Booking"
+        description="Browse calm and memorable stays with Luma Stays. Search venues, filter by guests, and find accommodation for your next trip."
+      />
+
       <section className="home-hero">
         <picture>
           <source srcSet={heroMobile} media="(max-width: 767px)" />

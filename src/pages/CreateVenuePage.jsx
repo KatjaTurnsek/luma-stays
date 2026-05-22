@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import PageMeta from "../components/PageMeta";
 import VenueForm from "../components/venues/VenueForm";
 import { createVenue } from "../api/venues-api";
 
@@ -44,29 +45,36 @@ export default function CreateVenuePage() {
   }
 
   return (
-    <div className="venue-form-page">
-      <section
-        className="venue-form-page__hero"
-        aria-label="Create venue intro"
-      >
-        <div className="venue-form-page__hero-overlay">
-          <h1>Manage your venues</h1>
-        </div>
-      </section>
+    <>
+      <PageMeta
+        title="Create Venue | Luma Stays"
+        description="Create a new venue listing on Luma Stays with images, price, guest capacity, facilities, location, and rating."
+      />
 
-      <div className="container venue-form-page__container">
-        <VenueForm
-          title="Create new venue"
-          submitLabel="Create venue"
-          submittingLabel="Creating venue..."
-          apiError={apiError}
-          successMessage={successMessage}
-          isSubmitting={isSubmitting}
-          onSubmit={handleSubmit}
-          onClearApiError={() => setApiError("")}
-          onClearSuccessMessage={() => setSuccessMessage("")}
-        />
+      <div className="venue-form-page">
+        <section
+          className="venue-form-page__hero"
+          aria-label="Create venue intro"
+        >
+          <div className="venue-form-page__hero-overlay">
+            <h1>Manage your venues</h1>
+          </div>
+        </section>
+
+        <div className="container venue-form-page__container">
+          <VenueForm
+            title="Create new venue"
+            submitLabel="Create venue"
+            submittingLabel="Creating venue..."
+            apiError={apiError}
+            successMessage={successMessage}
+            isSubmitting={isSubmitting}
+            onSubmit={handleSubmit}
+            onClearApiError={() => setApiError("")}
+            onClearSuccessMessage={() => setSuccessMessage("")}
+          />
+        </div>
       </div>
-    </div>
+    </>
   );
 }
