@@ -61,6 +61,7 @@ export default function Header() {
             alt="Luma Stays"
             width="250"
             height="51"
+            fetchPriority="high"
           />
         </Link>
 
