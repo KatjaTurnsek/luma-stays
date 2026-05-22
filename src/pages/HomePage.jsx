@@ -126,7 +126,7 @@ export default function HomePage() {
           </label>
 
           <button type="submit" className="ui-btn-primary home-search__button">
-            Search
+            Search all stays
           </button>
         </form>
       </section>

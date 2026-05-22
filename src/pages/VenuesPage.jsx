@@ -60,10 +60,6 @@ export default function VenuesPage() {
   const visibleVenues = sortedVenues.slice(0, visibleCount);
   const hasMoreVenues = visibleCount < sortedVenues.length;
 
-  function handleSearchSubmit(event) {
-    event.preventDefault();
-  }
-
   function handleLoadMore() {
     setVisibleCount((currentCount) => currentCount + 9);
   }
@@ -120,21 +116,24 @@ export default function VenuesPage() {
 
       <section className="venues-page__content">
         <div className="container">
-          <form
-            className="venues-page__search"
-            aria-label="Filter stays"
-            onSubmit={handleSearchSubmit}
-          >
+          <div className="venues-page__search" aria-label="Filter stays">
             <label className="venues-page__search-field">
               <span className="visually-hidden">Location or stay name</span>
               <input
                 type="search"
+                name="search"
                 value={searchValue}
                 onChange={handleSearchChange}
                 placeholder="Location"
               />
               <span className="venues-page__search-icon">
-                <img src={locationIcon} alt="" aria-hidden="true" />
+                <img
+                  src={locationIcon}
+                  alt=""
+                  aria-hidden="true"
+                  width="24"
+                  height="24"
+                />
               </span>
             </label>
 
@@ -142,23 +141,23 @@ export default function VenuesPage() {
               <span className="visually-hidden">Guests</span>
               <input
                 type="number"
+                name="guests"
                 min="1"
                 value={guestValue}
                 onChange={handleGuestsChange}
                 placeholder="Guests"
               />
               <span className="venues-page__search-icon">
-                <img src={guestsIcon} alt="" aria-hidden="true" />
+                <img
+                  src={guestsIcon}
+                  alt=""
+                  aria-hidden="true"
+                  width="24"
+                  height="24"
+                />
               </span>
             </label>
-
-            <button
-              type="submit"
-              className="ui-btn-primary venues-page__search-button"
-            >
-              Search
-            </button>
-          </form>
+          </div>
 
           {isLoadingVenues && <Loader text="Loading stays..." />}
 
@@ -195,7 +194,13 @@ export default function VenuesPage() {
                   >
                     <span>{selectedSort.label}</span>
                     <span className="venues-page__sort-icon">
-                      <img src={chevronDownIcon} alt="" aria-hidden="true" />
+                      <img
+                        src={chevronDownIcon}
+                        alt=""
+                        aria-hidden="true"
+                        width="24"
+                        height="24"
+                      />
                     </span>
                   </button>
 
