@@ -2,6 +2,10 @@
 
 Luma Stays is a front-end accommodation booking application built for Noroff Project Exam 2. The project uses the Holidaze API and allows users to browse venues, create bookings, and manage venues depending on their account type.
 
+## Preview
+
+![Luma Stays homepage preview](./public/readme/luma-stays-preview.webp)
+
 ## Live Site
 
 [Luma Stays App](https://luma-stays.netlify.app/)
