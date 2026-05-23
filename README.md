@@ -151,6 +151,12 @@ src/
   utils/
 ```
 
+## AI Usage
+
+AI was used as a support tool for brainstorming, concept clarification, test data, documentation drafts, and discussion of possible solutions. The suggestions were reviewed and adapted to fit the project brief and application requirements.
+
+See the full log here: [AI Usage Log](./AI_LOG.md)
+
 ## Author
 
 Katja Turnšek  
