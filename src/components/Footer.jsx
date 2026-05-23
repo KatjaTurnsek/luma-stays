@@ -1,5 +1,6 @@
-import { Link } from "react-router-dom";
-import { getAuth, clearAuth } from "../utils/auth-storage";
+import { Link, useNavigate } from "react-router-dom";
+
+import useAuth from "../hooks/useAuth";
 
 import logoDark from "../assets/logos/logo-dark.svg";
 import footerIllustration from "../assets/images/footer-illustration.svg";
@@ -7,12 +8,12 @@ import footerIllustration from "../assets/images/footer-illustration.svg";
 import "../styles/footer.css";
 
 export default function Footer() {
-  const auth = getAuth();
-  const isLoggedIn = Boolean(auth?.accessToken);
-  const isVenueManager = Boolean(auth?.venueManager);
+  const { isLoggedIn, isVenueManager, logout } = useAuth();
+  const navigate = useNavigate();
 
   function handleLogout() {
-    clearAuth();
+    logout();
+    navigate("/");
   }
 
   return (
@@ -29,6 +30,7 @@ export default function Footer() {
               loading="lazy"
             />
           </Link>
+
           <p>Stay somewhere worth remembering.</p>
         </div>
 
