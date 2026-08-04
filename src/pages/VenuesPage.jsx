@@ -9,7 +9,7 @@ import VenueCard from "../components/VenueCard";
 import useVenues from "../hooks/useVenues";
 import { filterVenues, sortVenues } from "../utils/venue-utils";
 
-import locationIcon from "../assets/icons/location.svg";
+import searchIcon from "../assets/icons/search.svg";
 import guestsIcon from "../assets/icons/users.svg";
 import chevronDownIcon from "../assets/icons/chevron-down.svg";
 
@@ -112,7 +112,7 @@ export default function VenuesPage() {
     <>
       <PageMeta
         title="Explore Stays | Luma Stays"
-        description="Explore available venues, search by location or stay name, filter by guests, and sort stays by price, rating, or newest listings."
+        description="Explore available venues, search by stay name, location, or amenities, filter by guests, and sort stays by price, rating, or newest listings."
       />
 
       <div className="venues-page">
@@ -127,17 +127,19 @@ export default function VenuesPage() {
           <div className="container">
             <div className="venues-page__search" aria-label="Filter stays">
               <label className="venues-page__search-field">
-                <span className="visually-hidden">Location or stay name</span>
+                <span className="visually-hidden">
+                  Search stays, location, or amenities
+                </span>
                 <input
                   type="search"
                   name="search"
                   value={searchValue}
                   onChange={handleSearchChange}
-                  placeholder="Location"
+                  placeholder="Search stays, location, or amenities"
                 />
                 <span className="venues-page__search-icon">
                   <img
-                    src={locationIcon}
+                    src={searchIcon}
                     alt=""
                     aria-hidden="true"
                     width="24"

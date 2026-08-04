@@ -11,7 +11,7 @@ import { filterVenues } from "../utils/venue-utils";
 
 import heroDesktop from "../assets/images/hero-desktop.webp";
 import heroMobile from "../assets/images/hero-mobile.webp";
-import locationIcon from "../assets/icons/location.svg";
+import searchIcon from "../assets/icons/search.svg";
 import guestsIcon from "../assets/icons/users.svg";
 
 import "../styles/home.css";
@@ -58,7 +58,7 @@ export default function HomePage() {
     <>
       <PageMeta
         title="Luma Stays | Accommodation Booking"
-        description="Browse calm and memorable stays with Luma Stays. Search venues, filter by guests, and find accommodation for your next trip."
+        description="Browse calm and memorable stays with Luma Stays. Search by venue, location, or amenities, filter by guests, and find accommodation for your next trip."
       />
 
       <section className="home-hero">
@@ -91,17 +91,19 @@ export default function HomePage() {
           <div className="home-search__line"></div>
 
           <label className="home-search__field">
-            <span className="visually-hidden">Location or stay name</span>
+            <span className="visually-hidden">
+              Search stays, location, or amenities
+            </span>
             <input
               type="search"
               name="search"
-              placeholder="Location or stay name"
+              placeholder="Search stays, location, or amenities"
               value={searchValue}
               onChange={handleSearchValueChange}
             />
             <span>
               <img
-                src={locationIcon}
+                src={searchIcon}
                 alt=""
                 aria-hidden="true"
                 width="24"
