@@ -60,60 +60,102 @@ export function getVenueAmenities(meta) {
 }
 
 /**
+ * Normalizes text before search comparison.
+ * Makes search case-insensitive and removes extra spaces.
+ * @param {string|number|null|undefined} value - Text value to normalize.
+ * @returns {string} Normalized search text.
+ */
+export function normalizeSearchText(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ");
+}
+
+/**
+ * Creates one searchable string from venue data.
+ * Includes visible card data and extra API fields that are useful for search.
+ * @param {object} venue - Formatted venue card data.
+ * @returns {string} Searchable venue text.
+ */
+export function getVenueSearchText(venue) {
+  return normalizeSearchText(
+    [
+      venue.title,
+      venue.description,
+      venue.location,
+      venue.address,
+      venue.city,
+      venue.zip,
+      venue.country,
+      venue.continent,
+      venue.ownerName,
+      ...venue.amenities,
+    ].join(" ")
+  );
+}
+
+/**
  * Converts one API venue object into the format used by VenueCard and venue filtering.
  * Adds display values and numeric values so sorting and rendering can use the same data.
  * @param {object} venue - Venue object from the API.
  * @param {string} venue.id - Venue ID.
  * @param {string} venue.name - Venue name.
+ * @param {string} [venue.description] - Venue description.
  * @param {number|string} venue.price - Venue price per night.
  * @param {number|string} venue.maxGuests - Maximum number of guests.
  * @param {number|string} [venue.rating] - Venue rating.
  * @param {Array} [venue.media] - Venue media array.
  * @param {object} [venue.location] - Venue location object.
  * @param {object} [venue.meta] - Venue meta object.
+ * @param {object} [venue.owner] - Venue owner object.
  * @param {string} [venue.created] - Venue created date.
  * @returns {object} Formatted venue card data.
  */
 export function formatVenueCardData(venue) {
   const rating = Number(venue.rating) || 0;
   const price = Number(venue.price) || 0;
+  const location = venue.location || {};
+  const amenities = getVenueAmenities(venue.meta);
 
   return {
     id: venue.id,
     title: venue.name,
-    location: getVenueLocationText(venue.location),
+    description: venue.description || "",
+    location: getVenueLocationText(location),
+    address: location.address || "",
+    city: location.city || "",
+    zip: location.zip || "",
+    country: location.country || "",
+    continent: location.continent || "",
+    ownerName: venue.owner?.name || "",
     price: `${price} EUR / night`,
     priceValue: price,
     guests: `${venue.maxGuests} guests`,
-    maxGuests: venue.maxGuests || 0,
+    maxGuests: Number(venue.maxGuests) || 0,
     rating: rating.toString().replace(".", ","),
     ratingValue: rating,
     image: venue.media?.[0]?.url || placeholderImage,
-    amenities: getVenueAmenities(venue.meta),
+    amenities,
     created: venue.created || "",
   };
 }
 
 /**
  * Checks if a formatted venue matches the current text search.
- * Matches against venue title and location.
+ * Matches against title, description, location fields, owner name, and amenities.
  * @param {object} venue - Formatted venue card data.
- * @param {string} venue.title - Venue title.
- * @param {string} venue.location - Venue location text.
  * @param {string} searchText - Search text from input or URL params.
  * @returns {boolean} True if the venue matches the search text.
  */
 export function venueMatchesSearch(venue, searchText) {
-  const normalizedSearch = searchText.trim().toLowerCase();
+  const normalizedSearch = normalizeSearchText(searchText);
 
   if (!normalizedSearch) {
     return true;
   }
 
-  return (
-    venue.title.toLowerCase().includes(normalizedSearch) ||
-    venue.location.toLowerCase().includes(normalizedSearch)
-  );
+  return getVenueSearchText(venue).includes(normalizedSearch);
 }
 
 /**
