@@ -1,10 +1,9 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import Loader from "../Loader";
 import UiAlert from "../UiAlert";
 
-import { deleteVenue, getProfileVenues } from "../../api/venues-api";
+import useManagerVenues from "../../hooks/useManagerVenues";
 
 import BookingOverview from "./BookingOverview";
 import EmptyState from "./EmptyState";
@@ -17,64 +16,18 @@ import ManagerVenueCard from "./ManagerVenueCard";
  * @returns {JSX.Element} Manager view.
  */
 export default function VenueManagerProfileView({ auth }) {
-  const [venues, setVenues] = useState([]);
-  const [isLoadingVenues, setIsLoadingVenues] = useState(true);
-  const [venuesError, setVenuesError] = useState("");
-  const [deleteError, setDeleteError] = useState("");
-  const [deleteSuccess, setDeleteSuccess] = useState("");
-  const [deletingVenueId, setDeletingVenueId] = useState("");
-
-  useEffect(() => {
-    let isMounted = true;
-
-    async function loadOwnedVenues() {
-      try {
-        const response = await getProfileVenues(auth.name);
-
-        if (isMounted) {
-          setVenues(response?.data || []);
-        }
-      } catch (error) {
-        if (isMounted) {
-          setVenuesError(error.message || "Could not load your venues.");
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoadingVenues(false);
-        }
-      }
-    }
-
-    loadOwnedVenues();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [auth.name]);
-
-  /**
-   * Deletes a venue and removes it from the profile UI.
-   * @param {string} venueId - Venue ID.
-   */
-  async function handleDeleteVenue(venueId) {
-    setDeleteError("");
-    setDeleteSuccess("");
-    setDeletingVenueId(venueId);
-
-    try {
-      await deleteVenue(venueId);
-
-      setVenues((currentVenues) =>
-        currentVenues.filter((venue) => venue.id !== venueId)
-      );
-
-      setDeleteSuccess("Venue deleted successfully.");
-    } catch (error) {
-      setDeleteError(error.message || "Could not delete venue.");
-    } finally {
-      setDeletingVenueId("");
-    }
-  }
+  const {
+    venues,
+    isLoadingVenues,
+    venuesError,
+    deleteError,
+    deleteSuccess,
+    deletingVenueId,
+    setVenuesError,
+    setDeleteError,
+    setDeleteSuccess,
+    handleDeleteVenue,
+  } = useManagerVenues(auth.name);
 
   const hasVenues = venues.length > 0;
 

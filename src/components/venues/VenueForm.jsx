@@ -35,6 +35,35 @@ function getLocationFromInput(value) {
 }
 
 /**
+ * Creates the media payload from media form fields.
+ * Empty image fields are removed before sending data to the API.
+ * @param {Array<object>} mediaFields - Media input values.
+ * @returns {Array<object>} Media API payload.
+ */
+function getMediaPayload(mediaFields) {
+  return mediaFields
+    .filter((mediaItem) => mediaItem.url.trim())
+    .map((mediaItem) => ({
+      url: mediaItem.url.trim(),
+      alt: mediaItem.alt.trim(),
+    }));
+}
+
+/**
+ * Checks if media fields have changed from their initial edit values.
+ * Used so edit requests do not resend unchanged existing image URLs.
+ * @param {Array<object>} currentMediaFields - Current media input values.
+ * @param {Array<object>} initialMediaFields - Initial media input values.
+ * @returns {boolean} True if media fields changed.
+ */
+function hasMediaChanged(currentMediaFields, initialMediaFields = EMPTY_MEDIA) {
+  const currentMedia = getMediaPayload(currentMediaFields);
+  const initialMedia = getMediaPayload(initialMediaFields);
+
+  return JSON.stringify(currentMedia) !== JSON.stringify(initialMedia);
+}
+
+/**
  * Validates venue form values.
  * @param {object} values - Main form values.
  * @param {Array} mediaFields - Media fields.
@@ -252,18 +281,12 @@ export default function VenueForm({
   function createPayload() {
     const location = getLocationFromInput(formValues.cityCountry);
     const rating = formValues.rating ? Number(formValues.rating) : 0;
+    const media = getMediaPayload(mediaFields);
+    const isEditMode = Boolean(initialData);
 
-    const media = mediaFields
-      .filter((mediaItem) => mediaItem.url.trim())
-      .map((mediaItem) => ({
-        url: mediaItem.url.trim(),
-        alt: mediaItem.alt.trim(),
-      }));
-
-    return {
+    const payload = {
       name: formValues.name.trim(),
       description: formValues.description.trim(),
-      media,
       price: Number(formValues.price),
       maxGuests: Number(formValues.maxGuests),
       rating,
@@ -280,6 +303,12 @@ export default function VenueForm({
         country: location.country,
       },
     };
+
+    if (!isEditMode || hasMediaChanged(mediaFields, initialData.mediaFields)) {
+      payload.media = media;
+    }
+
+    return payload;
   }
 
   /**
