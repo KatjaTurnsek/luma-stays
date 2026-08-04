@@ -2,12 +2,15 @@ import { request } from "./http-client";
 
 /**
  * Gets a list of venues from the Holidaze API.
- * Venues are returned newest first and limited by the provided amount.
- * @param {number} [limit=12] - Number of venues to request.
+ * Venues are returned newest first and can be paginated.
+ * @param {number} [limit=12] - Number of venues to request per page.
+ * @param {number} [page=1] - Page number to request.
  * @returns {Promise<object|null>} Venues API response.
  */
-export function getVenues(limit = 12) {
-  return request(`/holidaze/venues?sort=created&sortOrder=desc&limit=${limit}`);
+export function getVenues(limit = 12, page = 1) {
+  return request(
+    `/holidaze/venues?sort=created&sortOrder=desc&limit=${limit}&page=${page}`
+  );
 }
 
 /**

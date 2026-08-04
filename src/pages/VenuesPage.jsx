@@ -37,8 +37,10 @@ const SORT_OPTIONS = [
 export default function VenuesPage() {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const { venues, isLoadingVenues, venuesError, setVenuesError } =
-    useVenues(100);
+  const { venues, isLoadingVenues, venuesError, setVenuesError } = useVenues({
+    limit: 100,
+    pages: 3,
+  });
 
   const [visibleCount, setVisibleCount] = useState(9);
   const [sortValue, setSortValue] = useState("created-desc");
