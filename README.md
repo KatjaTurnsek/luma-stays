@@ -35,6 +35,8 @@ Luma Stays is designed as a calm and premium booking experience. Visitors can br
 - CSS
 - Noroff Holidaze API
 - JSDoc
+- ESLint
+- Prettier
 
 ## Features
 
@@ -106,6 +108,18 @@ npm run preview
 npm run lint
 ```
 
+### Format Check
+
+```bash
+npm run format:check
+```
+
+### Format Code
+
+```bash
+npm run format
+```
+
 ### Generate JSDoc
 
 ```bash
@@ -125,6 +139,7 @@ The project was tested with:
 
 - Manual user story testing
 - ESLint
+- Prettier format check
 - Vite production build
 - Browser responsive testing
 - HTML Validator
@@ -136,6 +151,23 @@ Main flows tested:
 - Visitor browsing and searching venues
 - Customer registration, login, booking, profile, avatar update, and logout
 - Venue manager registration, login, venue create/edit/delete, booking overview, avatar update, and logout
+
+## Maintenance Notes
+
+After the original exam submission, the project was reviewed and improved with a focus on maintainability, clearer user states, and code consistency.
+
+Post-submission improvements include:
+
+- Improved venue search across names, descriptions, locations, amenities, owners, and guest counts
+- Safer venue editing so existing media is preserved when only text or price details are changed
+- Clearer venue detail states for visitors, customers, venue managers, and venue owners
+- Booking feedback for customers who already have upcoming bookings for a venue
+- Route-based code splitting with React lazy loading
+- Dynamic page metadata for React routes, including Open Graph and Twitter preview tags
+- Prettier setup with formatting scripts
+- Dependency review after `npm audit`, with safe updates applied where appropriate
+
+One remaining React Router audit advisory relates to unstable RSC APIs. This project is a client-side Vite React app and does not use React Server Components or server actions.
 
 ## Project Structure
 
