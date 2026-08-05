@@ -50,20 +50,6 @@ function getMediaPayload(mediaFields) {
 }
 
 /**
- * Checks if media fields have changed from their initial edit values.
- * Used so edit requests do not resend unchanged existing image URLs.
- * @param {Array<object>} currentMediaFields - Current media input values.
- * @param {Array<object>} initialMediaFields - Initial media input values.
- * @returns {boolean} True if media fields changed.
- */
-function hasMediaChanged(currentMediaFields, initialMediaFields = EMPTY_MEDIA) {
-  const currentMedia = getMediaPayload(currentMediaFields);
-  const initialMedia = getMediaPayload(initialMediaFields);
-
-  return JSON.stringify(currentMedia) !== JSON.stringify(initialMedia);
-}
-
-/**
  * Validates venue form values.
  * @param {object} values - Main form values.
  * @param {Array} mediaFields - Media fields.
@@ -181,6 +167,7 @@ export default function VenueForm({
     initialData?.mediaFields || EMPTY_MEDIA
   );
   const [formErrors, setFormErrors] = useState({});
+  const [isMediaTouched, setIsMediaTouched] = useState(false);
 
   /**
    * Updates text and number fields.
@@ -229,6 +216,8 @@ export default function VenueForm({
    * @param {string} value - New field value.
    */
   function handleMediaChange(index, field, value) {
+    setIsMediaTouched(true);
+
     setMediaFields((currentFields) =>
       currentFields.map((mediaItem, mediaIndex) => {
         if (mediaIndex !== index) {
@@ -255,6 +244,8 @@ export default function VenueForm({
    * Adds another image field.
    */
   function addMediaField() {
+    setIsMediaTouched(true);
+
     setMediaFields((currentFields) => [
       ...currentFields,
       {
@@ -269,6 +260,8 @@ export default function VenueForm({
    * @param {number} index - Media item index.
    */
   function removeMediaField(index) {
+    setIsMediaTouched(true);
+
     setMediaFields((currentFields) =>
       currentFields.filter((_, mediaIndex) => mediaIndex !== index)
     );
@@ -276,12 +269,16 @@ export default function VenueForm({
 
   /**
    * Creates the API payload from form values.
+   * When editing, unchanged media is sent back to preserve existing images.
    * @returns {object} Venue API payload.
    */
   function createPayload() {
     const location = getLocationFromInput(formValues.cityCountry);
     const rating = formValues.rating ? Number(formValues.rating) : 0;
     const media = getMediaPayload(mediaFields);
+    const initialMedia = getMediaPayload(
+      initialData?.mediaFields || EMPTY_MEDIA
+    );
     const isEditMode = Boolean(initialData);
 
     const payload = {
@@ -304,8 +301,12 @@ export default function VenueForm({
       },
     };
 
-    if (!isEditMode || hasMediaChanged(mediaFields, initialData.mediaFields)) {
+    if (!isEditMode) {
       payload.media = media;
+    } else if (isMediaTouched) {
+      payload.media = media;
+    } else {
+      payload.media = initialMedia;
     }
 
     return payload;
