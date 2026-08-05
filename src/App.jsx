@@ -1,69 +1,79 @@
+import { lazy, Suspense } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+
 import MainLayout from "./layouts/MainLayout";
 
+import Loader from "./components/Loader";
+import ProtectedRoute from "./components/ProtectedRoute";
 import ScrollToTop from "./components/ScrollToTop";
 
-import HomePage from "./pages/HomePage";
-import VenuesPage from "./pages/VenuesPage";
-import VenueDetailsPage from "./pages/VenueDetailsPage";
-import LoginPage from "./pages/LoginPage";
-import RegisterPage from "./pages/RegisterPage";
-import ProfilePage from "./pages/ProfilePage";
-import CreateVenuePage from "./pages/CreateVenuePage";
-import EditVenuePage from "./pages/EditVenuePage";
-import HelpPage from "./pages/HelpPage";
-import TermsPage from "./pages/TermsPage";
-import PrivacyPage from "./pages/PrivacyPage";
-import NotFoundPage from "./pages/NotFoundPage";
-
-import ProtectedRoute from "./components/ProtectedRoute";
+const HomePage = lazy(() => import("./pages/HomePage"));
+const VenuesPage = lazy(() => import("./pages/VenuesPage"));
+const VenueDetailsPage = lazy(() => import("./pages/VenueDetailsPage"));
+const LoginPage = lazy(() => import("./pages/LoginPage"));
+const RegisterPage = lazy(() => import("./pages/RegisterPage"));
+const ProfilePage = lazy(() => import("./pages/ProfilePage"));
+const CreateVenuePage = lazy(() => import("./pages/CreateVenuePage"));
+const EditVenuePage = lazy(() => import("./pages/EditVenuePage"));
+const HelpPage = lazy(() => import("./pages/HelpPage"));
+const TermsPage = lazy(() => import("./pages/TermsPage"));
+const PrivacyPage = lazy(() => import("./pages/PrivacyPage"));
+const NotFoundPage = lazy(() => import("./pages/NotFoundPage"));
 
 function App() {
   return (
     <BrowserRouter>
       <ScrollToTop />
 
-      <Routes>
-        <Route element={<MainLayout />}>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/venues" element={<VenuesPage />} />
-          <Route path="/venues/:id" element={<VenueDetailsPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/help" element={<HelpPage />} />
-          <Route path="/terms" element={<TermsPage />} />
-          <Route path="/privacy" element={<PrivacyPage />} />
+      <Suspense
+        fallback={
+          <div className="container ui-section">
+            <Loader text="Loading page..." />
+          </div>
+        }
+      >
+        <Routes>
+          <Route element={<MainLayout />}>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/venues" element={<VenuesPage />} />
+            <Route path="/venues/:id" element={<VenueDetailsPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/help" element={<HelpPage />} />
+            <Route path="/terms" element={<TermsPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
 
-          <Route
-            path="/profile"
-            element={
-              <ProtectedRoute>
-                <ProfilePage />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/venues/create"
-            element={
-              <ProtectedRoute requireVenueManager>
-                <CreateVenuePage />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/venues/create"
+              element={
+                <ProtectedRoute requireVenueManager>
+                  <CreateVenuePage />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/venues/:id/edit"
-            element={
-              <ProtectedRoute requireVenueManager>
-                <EditVenuePage />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/venues/:id/edit"
+              element={
+                <ProtectedRoute requireVenueManager>
+                  <EditVenuePage />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route path="*" element={<NotFoundPage />} />
-        </Route>
-      </Routes>
+            <Route path="*" element={<NotFoundPage />} />
+          </Route>
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }
