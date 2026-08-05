@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 import PageMeta from "../components/PageMeta";
 import Loader from "../components/Loader";
 import UiAlert from "../components/UiAlert";
 import VenueGallery from "../components/VenueGallery";
 import VenueBookingCard from "../components/VenueBookingCard";
+import VenueLoggedOutBookingCard from "../components/venues/VenueLoggedOutBookingCard";
+import VenueOwnerActionsCard from "../components/venues/VenueOwnerActionsCard";
+import VenueManagerReadOnlyCard from "../components/venues/VenueManagerReadOnlyCard";
 
-import { deleteVenue, getVenueById } from "../api/venues-api";
+import { getVenueById } from "../api/venues-api";
 import { getAuth } from "../utils/auth-storage";
 import { getVenueLocationText } from "../utils/venue-utils";
 
@@ -51,15 +54,11 @@ function getVenueFeatures(meta) {
 
 export default function VenueDetailsPage() {
   const { id } = useParams();
-  const navigate = useNavigate();
   const auth = getAuth();
 
   const [venue, setVenue] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
-  const [deleteError, setDeleteError] = useState("");
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [isDeleteConfirmVisible, setIsDeleteConfirmVisible] = useState(false);
 
   useEffect(() => {
     async function loadVenue() {
@@ -75,23 +74,6 @@ export default function VenueDetailsPage() {
 
     loadVenue();
   }, [id]);
-
-  /**
-   * Deletes the current venue and redirects the manager back to profile.
-   */
-  async function handleDeleteVenue() {
-    setDeleteError("");
-    setIsDeleting(true);
-
-    try {
-      await deleteVenue(id);
-      navigate("/profile", { replace: true });
-    } catch (error) {
-      setDeleteError(error.message || "Could not delete venue.");
-      setIsDeleting(false);
-      setIsDeleteConfirmVisible(false);
-    }
-  }
 
   if (isLoading) {
     return (
@@ -128,7 +110,9 @@ export default function VenueDetailsPage() {
   const locationText = getVenueLocationText(venue.location);
   const features = getVenueFeatures(venue.meta);
   const owner = venue.owner;
+  const isLoggedOut = !auth;
   const isVenueManager = Boolean(auth?.venueManager);
+  const isCustomer = Boolean(auth) && !isVenueManager;
   const isOwnedByCurrentManager = isVenueManager && auth?.name === owner?.name;
   const isOtherManagerVenue = isVenueManager && !isOwnedByCurrentManager;
 
@@ -228,123 +212,14 @@ export default function VenueDetailsPage() {
               </section>
             </main>
 
-            {isOwnedByCurrentManager && (
-              <aside
-                className="venue-details__manager-card"
-                aria-labelledby="manager-actions-title"
-              >
-                <div className="venue-details__manager-top">
-                  <p className="venue-details__manager-label">Manager view</p>
-
-                  <h2 id="manager-actions-title">Manage this venue</h2>
-                </div>
-
-                <div className="venue-details__manager-content">
-                  <p>
-                    You own this venue. Edit the listing details or remove it
-                    from Luma Stays.
-                  </p>
-
-                  {deleteError && (
-                    <UiAlert
-                      message={deleteError}
-                      type="error"
-                      onClose={() => setDeleteError("")}
-                    />
-                  )}
-
-                  <div className="venue-details__manager-actions">
-                    <Link
-                      to={`/venues/${venue.id}/edit`}
-                      className="ui-btn-primary"
-                    >
-                      Edit venue
-                    </Link>
-
-                    {!isDeleteConfirmVisible && (
-                      <button
-                        type="button"
-                        className="ui-btn-danger"
-                        onClick={() => setIsDeleteConfirmVisible(true)}
-                      >
-                        Delete venue
-                      </button>
-                    )}
-                  </div>
-
-                  {isDeleteConfirmVisible && (
-                    <div className="venue-details__delete-confirmation">
-                      <p>
-                        Deleting this venue cannot be undone. Are you sure you
-                        want to continue?
-                      </p>
-
-                      <div className="venue-details__manager-actions">
-                        <button
-                          type="button"
-                          className="ui-btn-secondary"
-                          onClick={() => setIsDeleteConfirmVisible(false)}
-                          disabled={isDeleting}
-                        >
-                          Cancel
-                        </button>
-
-                        <button
-                          type="button"
-                          className="ui-btn-danger"
-                          onClick={handleDeleteVenue}
-                          disabled={isDeleting}
-                        >
-                          {isDeleting ? "Deleting..." : "Confirm delete"}
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </aside>
+            {isLoggedOut && (
+              <VenueLoggedOutBookingCard
+                price={venue.price}
+                maxGuests={venue.maxGuests}
+              />
             )}
 
-            {isOtherManagerVenue && (
-              <aside
-                className="venue-details__manager-card"
-                aria-labelledby="manager-readonly-title"
-              >
-                <div className="venue-details__manager-top">
-                  <p className="venue-details__manager-label">Manager view</p>
-
-                  <h2 id="manager-readonly-title">Viewing another venue</h2>
-                </div>
-
-                <div className="venue-details__manager-content">
-                  <p>
-                    This venue is managed by{" "}
-                    <strong>{owner?.name || "another host"}</strong>. You can
-                    view the listing, but bookings are only available from
-                    customer accounts.
-                  </p>
-
-                  <div className="venue-details__manager-meta">
-                    <div>
-                      <span>Price per night</span>
-                      <strong>{venue.price} EUR</strong>
-                    </div>
-
-                    <div>
-                      <span>Max guests</span>
-                      <strong>{venue.maxGuests}</strong>
-                    </div>
-                  </div>
-
-                  <div className="venue-details__manager-actions">
-                    <Link to="/venues" className="ui-btn-secondary">
-                      Back to venues
-                    </Link>
-                  </div>
-                </div>
-              </aside>
-            )}
-
-            {!isVenueManager && (
+            {isCustomer && (
               <VenueBookingCard
                 venue={venue}
                 onBookingCreated={(booking) =>
@@ -353,6 +228,18 @@ export default function VenueDetailsPage() {
                     bookings: [...(currentVenue.bookings || []), booking],
                   }))
                 }
+              />
+            )}
+
+            {isOwnedByCurrentManager && (
+              <VenueOwnerActionsCard venueId={venue.id} />
+            )}
+
+            {isOtherManagerVenue && (
+              <VenueManagerReadOnlyCard
+                owner={owner}
+                price={venue.price}
+                maxGuests={venue.maxGuests}
               />
             )}
           </div>
