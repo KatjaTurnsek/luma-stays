@@ -152,6 +152,8 @@ Main flows tested:
 - Customer registration, login, booking, profile, avatar update, and logout
 - Venue manager registration, login, venue create/edit/delete, booking overview, avatar update, and logout
 
+See detailed testing documentation here: [TESTING.md](./TESTING.md)
+
 ## Maintenance Notes
 
 After the original exam submission, the project was reviewed and improved with a focus on maintainability, clearer user states, and code consistency.
