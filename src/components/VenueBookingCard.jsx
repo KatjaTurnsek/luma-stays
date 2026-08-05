@@ -9,6 +9,10 @@ import CustomerVenueBookingNotice from "./venues/CustomerVenueBookingNotice";
 import { createBooking, getProfileBookings } from "../api/bookings-api";
 import { getAuth } from "../utils/auth-storage";
 import {
+  createLocalBooking,
+  getUpcomingBookingsForVenue,
+} from "../utils/booking-utils";
+import {
   getBookedDateKeys,
   getNightCount,
   rangeHasBookedDate,
@@ -18,31 +22,6 @@ import calendarIcon from "../assets/icons/calendar.svg";
 import usersIcon from "../assets/icons/users.svg";
 
 import "../styles/venue-booking-card.css";
-
-/**
- * Checks if a customer booking belongs to the current venue.
- * @param {object} booking - Customer booking.
- * @param {string} venueId - Current venue ID.
- * @returns {boolean} True if the booking belongs to the current venue.
- */
-function isBookingForVenue(booking, venueId) {
-  return booking?.venue?.id === venueId;
-}
-
-/**
- * Checks if a booking is upcoming.
- * @param {object} booking - Customer booking.
- * @returns {boolean} True if the booking has not ended yet.
- */
-function isUpcomingBooking(booking) {
-  const endDate = new Date(booking?.dateTo);
-
-  if (Number.isNaN(endDate.getTime())) {
-    return false;
-  }
-
-  return endDate >= new Date();
-}
 
 /**
  * Displays booking card on the venue details page.
@@ -55,6 +34,7 @@ export default function VenueBookingCard({ venue, onBookingCreated }) {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [guests, setGuests] = useState(1);
+  const [hasSelectedGuests, setHasSelectedGuests] = useState(false);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [isGuestPickerOpen, setIsGuestPickerOpen] = useState(false);
   const [isRoleNoticeVisible, setIsRoleNoticeVisible] = useState(true);
@@ -93,9 +73,9 @@ export default function VenueBookingCard({ venue, onBookingCreated }) {
       try {
         const response = await getProfileBookings(auth.name);
         const profileBookings = response?.data || [];
-        const bookingsForVenue = profileBookings.filter(
-          (booking) =>
-            isBookingForVenue(booking, venue.id) && isUpcomingBooking(booking)
+        const bookingsForVenue = getUpcomingBookingsForVenue(
+          profileBookings,
+          venue.id
         );
 
         if (isMounted) {
@@ -136,26 +116,43 @@ export default function VenueBookingCard({ venue, onBookingCreated }) {
     });
   }
 
+  /**
+   * Opens or closes the date picker and closes the guest picker.
+   */
   function toggleDatePicker() {
     setIsDatePickerOpen((isOpen) => !isOpen);
     setIsGuestPickerOpen(false);
     clearBookingMessage();
   }
 
+  /**
+   * Opens or closes the guest picker and closes the date picker.
+   */
   function toggleGuestPicker() {
     setIsGuestPickerOpen((isOpen) => !isOpen);
     setIsDatePickerOpen(false);
     clearBookingMessage();
   }
 
+  /**
+   * Closes the date picker.
+   */
   function closeDatePicker() {
     setIsDatePickerOpen(false);
   }
 
-  function closeGuestPicker() {
+  /**
+   * Saves the selected guest count and closes the guest picker.
+   */
+  function applyGuestSelection() {
+    setHasSelectedGuests(true);
     setIsGuestPickerOpen(false);
   }
 
+  /**
+   * Shows a warning when the selected date range is invalid.
+   * @param {string} message - Invalid date message.
+   */
   function handleInvalidDateSelection(message) {
     if (!message) {
       clearBookingMessage();
@@ -165,6 +162,9 @@ export default function VenueBookingCard({ venue, onBookingCreated }) {
     showBookingMessage(message, "warning");
   }
 
+  /**
+   * Closes the booking confirmation and clears the confirmed total price.
+   */
   function closeConfirmation() {
     setConfirmedBooking(null);
     setConfirmedTotalPrice(0);
@@ -205,7 +205,7 @@ export default function VenueBookingCard({ venue, onBookingCreated }) {
       };
     }
 
-    if (guests < 1 || guests > maxGuests) {
+    if (!hasSelectedGuests || guests < 1 || guests > maxGuests) {
       return {
         text: `Choose between 1 and ${maxGuests} guests.`,
         type: "warning",
@@ -229,13 +229,16 @@ export default function VenueBookingCard({ venue, onBookingCreated }) {
       return;
     }
 
+    const dateFrom = startDate.toISOString();
+    const dateTo = endDate.toISOString();
+
     clearBookingMessage();
     setIsSubmitting(true);
 
     try {
       const response = await createBooking({
-        dateFrom: startDate.toISOString(),
-        dateTo: endDate.toISOString(),
+        dateFrom,
+        dateTo,
         guests,
         venueId: venue.id,
       });
@@ -250,13 +253,12 @@ export default function VenueBookingCard({ venue, onBookingCreated }) {
         return;
       }
 
-      const createdBooking = {
-        ...booking,
-        dateFrom: booking.dateFrom || startDate.toISOString(),
-        dateTo: booking.dateTo || endDate.toISOString(),
-        guests: booking.guests || guests,
-        venue: booking.venue || { id: venue.id },
-      };
+      const createdBooking = createLocalBooking(booking, {
+        dateFrom,
+        dateTo,
+        guests,
+        venueId: venue.id,
+      });
 
       setConfirmedBooking(createdBooking);
       setConfirmedTotalPrice(totalPrice);
@@ -269,6 +271,7 @@ export default function VenueBookingCard({ venue, onBookingCreated }) {
       setStartDate(null);
       setEndDate(null);
       setGuests(1);
+      setHasSelectedGuests(false);
       setIsDatePickerOpen(false);
       setIsGuestPickerOpen(false);
     } catch (error) {
@@ -385,7 +388,13 @@ export default function VenueBookingCard({ venue, onBookingCreated }) {
                 aria-expanded={isGuestPickerOpen}
                 aria-controls="venue-guest-picker"
               >
-                <span>{guests > 1 ? `${guests} guests` : "Select guests"}</span>
+                <span>
+                  {hasSelectedGuests
+                    ? guests > 1
+                      ? `${guests} guests`
+                      : "1 guest"
+                    : "Select guests"}
+                </span>
 
                 <span className="venue-booking-card__input-icon">
                   <img src={usersIcon} alt="" aria-hidden="true" />
@@ -401,7 +410,7 @@ export default function VenueBookingCard({ venue, onBookingCreated }) {
                     guests={guests}
                     maxGuests={maxGuests}
                     setGuests={setGuests}
-                    onApply={closeGuestPicker}
+                    onApply={applyGuestSelection}
                   />
                 </div>
               )}
@@ -410,7 +419,13 @@ export default function VenueBookingCard({ venue, onBookingCreated }) {
             <button
               type="button"
               className="venue-booking-card__book-button"
-              disabled={!startDate || !endDate || nights <= 0 || isSubmitting}
+              disabled={
+                !startDate ||
+                !endDate ||
+                nights <= 0 ||
+                !hasSelectedGuests ||
+                isSubmitting
+              }
               onClick={handleBookNow}
             >
               {isSubmitting ? "Booking..." : "Book now"}
