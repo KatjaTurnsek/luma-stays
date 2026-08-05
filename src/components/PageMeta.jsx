@@ -1,9 +1,35 @@
 import { useEffect } from "react";
 
+const DEFAULT_TITLE = "Luma Stays | Accommodation Booking";
+
+const DEFAULT_DESCRIPTION =
+  "Luma Stays is an accommodation booking app where users can browse venues, create bookings, and manage stays through the Holidaze API.";
+
 const DEFAULT_SOCIAL_IMAGE =
   "https://luma-stays.netlify.app/social-preview.webp";
 
 const DEFAULT_SOCIAL_IMAGE_ALT = "Luma Stays accommodation booking app preview";
+
+/**
+ * Returns safe text content for meta values.
+ * Falls back when the value is missing or empty.
+ * @param {string} value - Preferred text value.
+ * @param {string} fallback - Fallback text value.
+ * @returns {string} Safe text content.
+ */
+function getSafeContent(value, fallback) {
+  const text = String(value || "").trim();
+
+  return text || fallback;
+}
+
+/**
+ * Gets the current page URL without query strings or hash values.
+ * @returns {string} Current clean page URL.
+ */
+function getPageUrl() {
+  return `${window.location.origin}${window.location.pathname}`;
+}
 
 /**
  * Creates or updates one meta tag.
@@ -42,6 +68,40 @@ function setCanonicalUrl(url) {
 }
 
 /**
+ * Creates or updates Open Graph meta tags.
+ * @param {object} values - Open Graph values.
+ * @param {string} values.title - Social title.
+ * @param {string} values.description - Social description.
+ * @param {string} values.image - Social preview image URL.
+ * @param {string} values.imageAlt - Social preview image alt text.
+ * @param {string} values.url - Page URL.
+ */
+function setOpenGraphTags({ title, description, image, imageAlt, url }) {
+  setMetaTag("property", "og:type", "website");
+  setMetaTag("property", "og:url", url);
+  setMetaTag("property", "og:title", title);
+  setMetaTag("property", "og:description", description);
+  setMetaTag("property", "og:image", image);
+  setMetaTag("property", "og:image:alt", imageAlt);
+}
+
+/**
+ * Creates or updates Twitter/X preview meta tags.
+ * @param {object} values - Twitter/X preview values.
+ * @param {string} values.title - Social title.
+ * @param {string} values.description - Social description.
+ * @param {string} values.image - Social preview image URL.
+ * @param {string} values.imageAlt - Social preview image alt text.
+ */
+function setTwitterTags({ title, description, image, imageAlt }) {
+  setMetaTag("name", "twitter:card", "summary_large_image");
+  setMetaTag("name", "twitter:title", title);
+  setMetaTag("name", "twitter:description", description);
+  setMetaTag("name", "twitter:image", image);
+  setMetaTag("name", "twitter:image:alt", imageAlt);
+}
+
+/**
  * Updates page title, meta description, and social preview data for React routes.
  * @param {object} props - Component props.
  * @param {string} props.title - Page title.
@@ -57,23 +117,30 @@ export default function PageMeta({
   imageAlt = DEFAULT_SOCIAL_IMAGE_ALT,
 }) {
   useEffect(() => {
-    const pageUrl = window.location.href;
+    const safeTitle = getSafeContent(title, DEFAULT_TITLE);
+    const safeDescription = getSafeContent(description, DEFAULT_DESCRIPTION);
+    const safeImage = getSafeContent(image, DEFAULT_SOCIAL_IMAGE);
+    const safeImageAlt = getSafeContent(imageAlt, DEFAULT_SOCIAL_IMAGE_ALT);
+    const pageUrl = getPageUrl();
 
-    document.title = title;
+    document.title = safeTitle;
 
-    setMetaTag("name", "description", description);
-    setMetaTag("property", "og:type", "website");
-    setMetaTag("property", "og:url", pageUrl);
-    setMetaTag("property", "og:title", title);
-    setMetaTag("property", "og:description", description);
-    setMetaTag("property", "og:image", image);
-    setMetaTag("property", "og:image:alt", imageAlt);
+    setMetaTag("name", "description", safeDescription);
 
-    setMetaTag("name", "twitter:card", "summary_large_image");
-    setMetaTag("name", "twitter:title", title);
-    setMetaTag("name", "twitter:description", description);
-    setMetaTag("name", "twitter:image", image);
-    setMetaTag("name", "twitter:image:alt", imageAlt);
+    setOpenGraphTags({
+      title: safeTitle,
+      description: safeDescription,
+      image: safeImage,
+      imageAlt: safeImageAlt,
+      url: pageUrl,
+    });
+
+    setTwitterTags({
+      title: safeTitle,
+      description: safeDescription,
+      image: safeImage,
+      imageAlt: safeImageAlt,
+    });
 
     setCanonicalUrl(pageUrl);
   }, [title, description, image, imageAlt]);
