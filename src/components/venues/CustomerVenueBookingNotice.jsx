@@ -20,6 +20,22 @@ function formatBookingDate(value) {
 }
 
 /**
+ * Gets a timestamp from a booking start date.
+ * Invalid dates are placed last when sorting.
+ * @param {object} booking - Customer booking.
+ * @returns {number} Booking start timestamp.
+ */
+function getBookingStartTime(booking) {
+  const date = new Date(booking?.dateFrom);
+
+  if (Number.isNaN(date.getTime())) {
+    return Number.MAX_SAFE_INTEGER;
+  }
+
+  return date.getTime();
+}
+
+/**
  * Sorts bookings by start date.
  * @param {Array<object>} bookings - Customer bookings for this venue.
  * @returns {Array<object>} Sorted bookings.
@@ -27,17 +43,41 @@ function formatBookingDate(value) {
 function sortBookingsByDate(bookings) {
   return [...bookings].sort(
     (firstBooking, secondBooking) =>
-      new Date(firstBooking.dateFrom) - new Date(secondBooking.dateFrom)
+      getBookingStartTime(firstBooking) - getBookingStartTime(secondBooking)
   );
+}
+
+/**
+ * Gets a stable key for a booking item.
+ * @param {object} booking - Customer booking.
+ * @returns {string} Booking key.
+ */
+function getBookingKey(booking) {
+  return booking?.id || `${booking?.dateFrom}-${booking?.dateTo}`;
+}
+
+/**
+ * Gets readable guest count text.
+ * @param {number|string} guests - Booking guest count.
+ * @returns {string} Guest count text.
+ */
+function getGuestText(guests) {
+  const guestCount = Number(guests);
+
+  if (guestCount === 1) {
+    return "1 guest";
+  }
+
+  return `${guestCount || 0} guests`;
 }
 
 /**
  * Shows a customer's existing booking summary for the current venue.
  * @param {object} props - Component props.
- * @param {Array<object>} props.bookings - Customer bookings for this venue.
+ * @param {Array<object>} [props.bookings=[]] - Customer bookings for this venue.
  * @returns {JSX.Element|null} Customer booking notice.
  */
-export default function CustomerVenueBookingNotice({ bookings }) {
+export default function CustomerVenueBookingNotice({ bookings = [] }) {
   if (bookings.length === 0) {
     return null;
   }
@@ -61,7 +101,7 @@ export default function CustomerVenueBookingNotice({ bookings }) {
         {sortedBookings.map((booking, index) => (
           <article
             className="venue-booking-card__customer-booking-item"
-            key={booking.id || `${booking.dateFrom}-${booking.dateTo}`}
+            key={getBookingKey(booking)}
           >
             <h4>Booking {index + 1}</h4>
 
@@ -78,7 +118,7 @@ export default function CustomerVenueBookingNotice({ bookings }) {
 
               <div>
                 <dt>Guests</dt>
-                <dd>{booking.guests}</dd>
+                <dd>{getGuestText(booking.guests)}</dd>
               </div>
             </dl>
           </article>
