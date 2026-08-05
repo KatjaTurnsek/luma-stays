@@ -1,6 +1,40 @@
 import { Link } from "react-router-dom";
 
 /**
+ * Gets readable price text.
+ * @param {number|string} price - Venue price per night.
+ * @returns {string} Price text.
+ */
+function getPriceText(price) {
+  const priceValue = Number(price);
+
+  if (Number.isNaN(priceValue)) {
+    return "Price not added";
+  }
+
+  return `${priceValue} EUR`;
+}
+
+/**
+ * Gets readable max guests text.
+ * @param {number|string} maxGuests - Maximum guests allowed.
+ * @returns {string} Max guests text.
+ */
+function getMaxGuestsText(maxGuests) {
+  const guestCount = Number(maxGuests);
+
+  if (guestCount === 1) {
+    return "1 guest";
+  }
+
+  if (Number.isNaN(guestCount) || guestCount < 1) {
+    return "Guests not added";
+  }
+
+  return `${guestCount} guests`;
+}
+
+/**
  * Shows a booking teaser when a logged-out visitor views a venue.
  * @param {object} props - Component props.
  * @param {number|string} props.price - Venue price per night.
@@ -27,12 +61,12 @@ export default function VenueLoggedOutBookingCard({ price, maxGuests }) {
         <div className="venue-details__manager-meta">
           <div>
             <span>Price per night</span>
-            <strong>{price} EUR</strong>
+            <strong>{getPriceText(price)}</strong>
           </div>
 
           <div>
             <span>Max guests</span>
-            <strong>{maxGuests}</strong>
+            <strong>{getMaxGuestsText(maxGuests)}</strong>
           </div>
         </div>
 
