@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import BookingConfirmation from "./BookingConfirmation";
 import GuestPicker from "./GuestPicker";
 import UiAlert from "./UiAlert";
 import VenueDatePicker from "./VenueDatePicker";
+import CustomerVenueBookingNotice from "./venues/CustomerVenueBookingNotice";
 
-import { createBooking } from "../api/bookings-api";
+import { createBooking, getProfileBookings } from "../api/bookings-api";
 import { getAuth } from "../utils/auth-storage";
 import {
   getBookedDateKeys,
@@ -17,6 +18,31 @@ import calendarIcon from "../assets/icons/calendar.svg";
 import usersIcon from "../assets/icons/users.svg";
 
 import "../styles/venue-booking-card.css";
+
+/**
+ * Checks if a customer booking belongs to the current venue.
+ * @param {object} booking - Customer booking.
+ * @param {string} venueId - Current venue ID.
+ * @returns {boolean} True if the booking belongs to the current venue.
+ */
+function isBookingForVenue(booking, venueId) {
+  return booking?.venue?.id === venueId;
+}
+
+/**
+ * Checks if a booking is upcoming.
+ * @param {object} booking - Customer booking.
+ * @returns {boolean} True if the booking has not ended yet.
+ */
+function isUpcomingBooking(booking) {
+  const endDate = new Date(booking?.dateTo);
+
+  if (Number.isNaN(endDate.getTime())) {
+    return false;
+  }
+
+  return endDate >= new Date();
+}
 
 /**
  * Displays booking card on the venue details page.
@@ -38,6 +64,8 @@ export default function VenueBookingCard({ venue, onBookingCreated }) {
   });
   const [confirmedBooking, setConfirmedBooking] = useState(null);
   const [confirmedTotalPrice, setConfirmedTotalPrice] = useState(0);
+  const [customerVenueBookings, setCustomerVenueBookings] = useState([]);
+  const [customerBookingsError, setCustomerBookingsError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const auth = getAuth();
@@ -50,6 +78,44 @@ export default function VenueBookingCard({ venue, onBookingCreated }) {
   const bookings = venue?.bookings || [];
   const nights = getNightCount(startDate, endDate);
   const totalPrice = nights * price;
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadCustomerVenueBookings() {
+      if (!isCustomer || !auth?.name || !venue?.id) {
+        setCustomerVenueBookings([]);
+        return;
+      }
+
+      setCustomerBookingsError("");
+
+      try {
+        const response = await getProfileBookings(auth.name);
+        const profileBookings = response?.data || [];
+        const bookingsForVenue = profileBookings.filter(
+          (booking) =>
+            isBookingForVenue(booking, venue.id) && isUpcomingBooking(booking)
+        );
+
+        if (isMounted) {
+          setCustomerVenueBookings(bookingsForVenue);
+        }
+      } catch (error) {
+        if (isMounted) {
+          setCustomerBookingsError(
+            error.message || "Could not load your existing bookings."
+          );
+        }
+      }
+    }
+
+    loadCustomerVenueBookings();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isCustomer, auth?.name, venue?.id]);
 
   /**
    * Shows booking feedback with the correct UI message type.
@@ -184,9 +250,21 @@ export default function VenueBookingCard({ venue, onBookingCreated }) {
         return;
       }
 
-      setConfirmedBooking(booking);
+      const createdBooking = {
+        ...booking,
+        dateFrom: booking.dateFrom || startDate.toISOString(),
+        dateTo: booking.dateTo || endDate.toISOString(),
+        guests: booking.guests || guests,
+        venue: booking.venue || { id: venue.id },
+      };
+
+      setConfirmedBooking(createdBooking);
       setConfirmedTotalPrice(totalPrice);
-      onBookingCreated?.(booking);
+      setCustomerVenueBookings((currentBookings) => [
+        createdBooking,
+        ...currentBookings,
+      ]);
+      onBookingCreated?.(createdBooking);
 
       setStartDate(null);
       setEndDate(null);
@@ -238,6 +316,14 @@ export default function VenueBookingCard({ venue, onBookingCreated }) {
           />
         )}
 
+        {customerBookingsError && (
+          <UiAlert
+            message={customerBookingsError}
+            type="warning"
+            onClose={() => setCustomerBookingsError("")}
+          />
+        )}
+
         {bookingMessage.text && (
           <UiAlert
             message={bookingMessage.text}
@@ -248,6 +334,8 @@ export default function VenueBookingCard({ venue, onBookingCreated }) {
 
         {isCustomer && (
           <>
+            <CustomerVenueBookingNotice bookings={customerVenueBookings} />
+
             <div className="venue-booking-card__dropdown">
               <button
                 type="button"

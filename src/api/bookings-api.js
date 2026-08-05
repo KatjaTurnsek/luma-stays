@@ -18,6 +18,18 @@ export function createBooking(bookingData) {
 }
 
 /**
+ * Gets bookings created by a specific customer profile.
+ * Includes venue data so bookings can be matched to the current venue page.
+ * @param {string} profileName - Customer profile name.
+ * @returns {Promise<object|null>} Profile bookings API response.
+ */
+export function getProfileBookings(profileName) {
+  return request(
+    `/holidaze/profiles/${encodeURIComponent(profileName)}/bookings?_venue=true`
+  );
+}
+
+/**
  * Deletes an existing booking owned by the logged-in customer.
  * Used when a customer cancels a booking from the profile page.
  * @param {string} id - Booking ID.
