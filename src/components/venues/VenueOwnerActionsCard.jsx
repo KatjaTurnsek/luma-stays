@@ -19,9 +19,36 @@ export default function VenueOwnerActionsCard({ venueId }) {
   const [isDeleteConfirmVisible, setIsDeleteConfirmVisible] = useState(false);
 
   /**
+   * Shows the delete confirmation message.
+   */
+  function showDeleteConfirmation() {
+    setDeleteError("");
+    setIsDeleteConfirmVisible(true);
+  }
+
+  /**
+   * Hides the delete confirmation message.
+   */
+  function hideDeleteConfirmation() {
+    setIsDeleteConfirmVisible(false);
+  }
+
+  /**
+   * Clears the delete error message.
+   */
+  function clearDeleteError() {
+    setDeleteError("");
+  }
+
+  /**
    * Deletes the current venue and redirects the manager back to profile.
    */
   async function handleDeleteVenue() {
+    if (!venueId) {
+      setDeleteError("Could not delete venue because the venue ID is missing.");
+      return;
+    }
+
     setDeleteError("");
     setIsDeleting(true);
 
@@ -56,7 +83,7 @@ export default function VenueOwnerActionsCard({ venueId }) {
           <UiAlert
             message={deleteError}
             type="error"
-            onClose={() => setDeleteError("")}
+            onClose={clearDeleteError}
           />
         )}
 
@@ -69,7 +96,7 @@ export default function VenueOwnerActionsCard({ venueId }) {
             <button
               type="button"
               className="ui-btn-danger"
-              onClick={() => setIsDeleteConfirmVisible(true)}
+              onClick={showDeleteConfirmation}
             >
               Delete venue
             </button>
@@ -87,7 +114,7 @@ export default function VenueOwnerActionsCard({ venueId }) {
               <button
                 type="button"
                 className="ui-btn-secondary"
-                onClick={() => setIsDeleteConfirmVisible(false)}
+                onClick={hideDeleteConfirmation}
                 disabled={isDeleting}
               >
                 Cancel
